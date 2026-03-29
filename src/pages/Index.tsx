@@ -44,7 +44,7 @@ import { FeaturesSection, ToolsSection, HowItWorksSection, CTASection } from "@/
 import CreditPaywall from "@/components/CreditPaywall";
 import { useCredits } from "@/hooks/useCredits";
 
-import TrustedReviewsCarousel from "@/components/TrustedReviewsCarousel";
+import ReviewsGrid from "@/components/ReviewsGrid";
 import LiveActivityFeed from "@/components/LiveActivityFeed";
 import LoginPrompt from "@/components/LoginPrompt";
 import { useAuth } from "@/hooks/useAuth";
@@ -606,7 +606,7 @@ const Index = () => {
           <FeaturesSection />
           <ToolsSection />
           <HowItWorksSection />
-          <TrustedReviewsCarousel />
+          <ReviewsGrid />
           <CTASection onCTAClick={scrollToInput} />
 
           <section className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-4">

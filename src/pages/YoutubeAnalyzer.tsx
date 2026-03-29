@@ -43,7 +43,7 @@ import AnalysisPaymentPopup from "@/components/AnalysisPaymentPopup";
 import CreditPaywall from "@/components/CreditPaywall";
 import { useCredits } from "@/hooks/useCredits";
 
-import TrustedReviewsCarousel from "@/components/TrustedReviewsCarousel";
+import ReviewsGrid from "@/components/ReviewsGrid";
 import LoginPrompt from "@/components/LoginPrompt";
 import { useAuth } from "@/hooks/useAuth";
 import type { ReelAnalysis } from "@/lib/types";
@@ -771,7 +771,7 @@ const YoutubeAnalyzer = () => {
             </div>
           </section>
 
-          <TrustedReviewsCarousel />
+          <ReviewsGrid />
 
           {/* CTA Section */}
           <section className="max-w-2xl mx-auto px-4 sm:px-6 py-14 text-center space-y-4 border-t border-border">
