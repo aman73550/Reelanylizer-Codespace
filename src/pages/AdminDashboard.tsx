@@ -28,13 +28,15 @@ import {
 import AdminApiKeysManager from "@/components/AdminApiKeysManager";
 import AdminUserManagement from "@/components/AdminUserManagement";
 import AdminPaymentDashboard from "@/components/AdminPaymentDashboard";
+import AdminPricingManager from "@/components/AdminPricingManager";
 
-type AdminSection = "dashboard" | "users" | "payments" | "config" | "api-keys";
+type AdminSection = "dashboard" | "users" | "payments" | "config" | "api-keys" | "pricing";
 
 const SIDEBAR_ITEMS: { id: AdminSection; label: string; icon: any; emoji: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, emoji: "📊" },
   { id: "users", label: "User Management", icon: Users, emoji: "👥" },
   { id: "payments", label: "Payments", icon: CreditCard, emoji: "💳" },
+  { id: "pricing", label: "Plans & Pricing", icon: Zap, emoji: "💰" },
   { id: "config", label: "Payment & Config", icon: Settings, emoji: "⚙️" },
   { id: "api-keys", label: "API Keys", icon: Key, emoji: "🔑" },
 ];
@@ -494,6 +496,8 @@ const AdminDashboard = () => {
         return <AdminUserManagement />;
       case "payments":
         return <AdminPaymentDashboard />;
+      case "pricing":
+        return <AdminPricingManager />;
       case "config":
         return renderConfig();
       case "api-keys":
