@@ -79,25 +79,76 @@ Set secrets in Supabase Edge Function secrets:
 
 Then call `create-admin` function.
 
-## 6. Vercel Deployment (Current Working)
+## 6. Vercel Deployment (Recommended)
 
-`vercel.json` already exists and is valid for this Vite SPA.
+`vercel.json` is configured for a Vite SPA with safe client-side routing fallback.
 
 Current config:
 
 - Framework: `vite`
-- Build: `npm run build`
-- Output: `dist`
-- Rewrite all routes to `index.html`
+- Install command: `npm ci`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Routing: serve static files first, then fallback to `index.html`
 
-Steps:
+### 6.1 Vercel Project Settings
 
-1. Import repository into Vercel
-2. Add environment variables:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_PUBLISHABLE_KEY`
-   - `VITE_SUPABASE_PROJECT_ID`
-3. Deploy
+In Vercel Project -> Settings -> General:
+
+- Framework Preset: `Vite`
+- Root Directory: `.`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Install Command: `npm ci`
+- Node.js Version: `20.x` (recommended)
+
+### 6.2 Environment Variables in Vercel
+
+In Vercel Project -> Settings -> Environment Variables, add:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_PROJECT_ID`
+
+Assign each variable to all environments:
+
+- Production
+- Preview
+- Development
+
+After changing environment variables, redeploy.
+
+### 6.3 Deploy from Git (Recommended)
+
+1. Import repository into Vercel.
+2. Confirm build settings above.
+3. Add environment variables for all 3 environments.
+4. Trigger deployment.
+
+### 6.4 Deploy from CLI
+
+```bash
+npm i -g vercel
+vercel login
+vercel link
+vercel env pull .env.vercel.local
+vercel --prod
+```
+
+### 6.5 Local Development with Vercel Runtime
+
+```bash
+vercel env pull .env.local
+vercel dev
+```
+
+Use this when you want local behavior to match Vercel environment handling.
+
+### 6.6 Common Vercel Failure Checks
+
+- Blank page with no UI: confirm SPA fallback routing (`routes` with `handle: filesystem` + `index.html` fallback).
+- App loads but API/auth fails: verify all `VITE_SUPABASE_*` variables are present in the target environment.
+- Works locally, fails on Vercel: verify Node version is 20.x and redeploy after env updates.
 
 ## 7. Other Static Hosts
 
