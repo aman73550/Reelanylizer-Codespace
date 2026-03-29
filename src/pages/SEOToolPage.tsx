@@ -6,7 +6,7 @@ import SEOHead from "@/components/SEOHead";
 import InternalLinks from "@/components/InternalLinks";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import TrustedReviewsCarousel from "@/components/TrustedReviewsCarousel";
+import ReviewsGrid from "@/components/ReviewsGrid";
 import { TrendingUp, Wand2, Hash, FileText, Target, BarChart3, Search, Zap } from "lucide-react";
 
 interface ToolPageConfig {
@@ -334,7 +334,7 @@ const SEOToolPage = ({ slug }: SEOToolPageProps) => {
       </section>
 
       {/* Reviews */}
-      <TrustedReviewsCarousel />
+      <ReviewsGrid />
 
       {/* Internal Links */}
       <InternalLinks currentPath={config.slug} />
