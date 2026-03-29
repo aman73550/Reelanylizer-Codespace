@@ -52,7 +52,7 @@ import type { ReelAnalysis } from "@/lib/types";
 // History panel moved into Header dropdown
 import CreatorPartnersCarousel from "@/components/CreatorPartnersCarousel";
 import SEOHead from "@/components/SEOHead";
-import { Loader2, Link as LinkIcon, Wand2, TrendingUp, ChevronDown, ChevronUp, ShieldCheck, Crown, LogIn, User } from "lucide-react";
+import { Loader2, Link as LinkIcon, Wand2, TrendingUp, ChevronDown, ChevronUp, ShieldCheck, Crown, LogIn, User, Zap } from "lucide-react";
 
 // === SESSION-LEVEL RESULT CACHE (same URL → same result, no re-analysis) ===
 const analysisCache = new Map<string, { result: ReelAnalysis; timestamp: number }>();
@@ -431,6 +431,11 @@ const Index = () => {
                   >
                     {loading ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t.analyzing}</>) : (<><TrendingUp className="w-4 h-4 mr-2" />{t.analyzeBtn}</>)}
                   </Button>
+
+                  <p className="text-center text-[11px] pt-1.5 text-muted-foreground/70 flex items-center justify-center gap-1">
+                    <Zap className="w-3 h-3" />
+                    <span>This analysis costs <strong>2 credits</strong></span>
+                  </p>
 
                   {user ? (
                     <p className="text-center text-[13px] pt-1 text-muted-foreground">

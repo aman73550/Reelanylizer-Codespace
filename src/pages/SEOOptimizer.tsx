@@ -8,7 +8,7 @@ const SEOOptimizer = () => {
     <div className="page-surface min-h-screen relative overflow-x-hidden pb-20 md:pb-0">
       <SEOHead
         title="Free Reel SEO Optimizer – Optimize Instagram Reels for Maximum Reach"
-        description="Free Instagram Reel SEO optimizer — 3 free credits on signup. Optimize your reel captions, titles, and hashtags for SEO. Smart suggestions to boost discoverability."
+        description="Free Instagram Reel SEO optimizer — 5 free credits every month on signup. Optimize your reel captions, titles, and hashtags for SEO. Smart suggestions to boost discoverability. Only 2 credits per optimization."
         canonical="https://reelsanylizer.in/seo-optimizer"
         keywords="free reel seo optimizer, free instagram reel seo, free reel optimization tool, free reel caption optimizer, free reel title optimizer, free instagram seo tool"
       />

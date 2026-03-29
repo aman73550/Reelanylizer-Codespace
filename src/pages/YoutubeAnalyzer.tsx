@@ -49,7 +49,7 @@ import { useAuth } from "@/hooks/useAuth";
 import type { ReelAnalysis } from "@/lib/types";
 // History panel moved into Header dropdown
 import CreatorPartnersCarousel from "@/components/CreatorPartnersCarousel";
-import { Loader2, Link as LinkIcon, Wand2, TrendingUp, ChevronDown, ChevronUp, ShieldCheck, Crown, LogIn, User } from "lucide-react";
+import { Loader2, Link as LinkIcon, Wand2, TrendingUp, ChevronDown, ChevronUp, ShieldCheck, Crown, LogIn, User, Zap } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 
 // === SESSION-LEVEL RESULT CACHE (same URL → same result, no re-analysis) ===
@@ -515,6 +515,11 @@ const YoutubeAnalyzer = () => {
                       <><TrendingUp className="w-4 h-4 mr-2" />{t.analyzeBtn}</>
                     )}
                   </Button>
+
+                  <p className="text-center text-[10px] sm:text-[11px] pt-1.5 sm:pt-2 text-muted-foreground/60 flex items-center justify-center gap-1 leading-relaxed">
+                    <Zap className="w-3 h-3 flex-shrink-0" />
+                    <span>This analysis costs <strong>2 credits</strong></span>
+                  </p>
 
                   {user ? (
                     <p className="text-center text-xs sm:text-[13px] pt-1.5 sm:pt-2 text-muted-foreground">

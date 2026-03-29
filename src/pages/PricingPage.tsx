@@ -79,7 +79,7 @@ const DEFAULT_PLANS = [
 
 const FAQ = [
   { q: "Do credits expire?", a: "Paid credits (Starter, Pro, Power plans) never expire. Free plan credits (5/month) roll over and never expire." },
-  { q: "How many credits does analysis cost?", a: "Instagram Reel Analysis costs 2 credits. YouTube Shorts Analysis costs 2 credits. SEO Optimizer costs 1 credit." },
+  { q: "How many credits does analysis cost?", a: "Instagram Reel Analysis costs 2 credits. YouTube Shorts Analysis costs 2 credits. SEO Optimizer costs 2 credits." },
   { q: "Can I get a refund?", a: "We offer refunds within 24 hours if no credits have been used. 100% money-back guarantee." },
   { q: "Is payment secure?", a: "Yes, all payments are processed securely via Razorpay with bank-grade encryption and SSL protection." },
   { q: "Do I need a credit card for Free plan?", a: "No card required for the Free plan! Get 5 monthly credits just by signing up — they roll over if unused." },
@@ -345,7 +345,8 @@ const PricingPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { icon: "🎯", title: "Reel Analysis", cost: "2 credits", desc: "Full report with viral score, hook analysis, and PDF export" },
-            { icon: "🔍", title: "SEO Optimizer", cost: "1 credit", desc: "Caption, hashtag, and keyword optimization" },
+            { icon: "🎬", title: "YouTube Shorts", cost: "2 credits", desc: "Viral potential score with YouTube algorithm insights" },
+            { icon: "🔍", title: "SEO Optimizer", cost: "2 credits", desc: "Caption, hashtag, and keyword optimization" },
             { icon: "🎁", title: "Free Monthly", cost: "5 credits", desc: "Every user gets 5 free credits each month — credits roll over if unused" },
           ].map((item, i) => (
             <motion.div

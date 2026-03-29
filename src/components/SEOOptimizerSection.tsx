@@ -177,14 +177,14 @@ const SEOOptimizerSection = () => {
                       {isProcessing
                         ? "Analyzing..."
                         : user
-                        ? "Start SEO Analysis (1 Credit)"
+                        ? "Start SEO Analysis (2 Credits)"
                         : "Login & Analyze"}
                     </Button>
 
                     {user && (
                       <div className="flex items-center justify-center lg:justify-start gap-2 mt-3 text-xs text-muted-foreground">
                         <Coins className="w-3.5 h-3.5 text-primary" />
-                        SEO Optimizer costs 1 credit per use
+                        SEO Optimizer costs 2 credits per use
                       </div>
                     )}
 

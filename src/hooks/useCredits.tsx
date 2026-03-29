@@ -12,6 +12,7 @@ interface CreditState {
   referralCode: string;
   loading: boolean;
   creditCosts: { reel_analysis: number; seo_optimizer: number };
+  creditCostDisplay: { reel: string; youtube: string; seo: string };
   canAfford: (tool: "reel_analysis" | "seo_optimizer") => boolean;
   deductCredits: (tool: "reel_analysis" | "seo_optimizer") => Promise<boolean>;
   refreshCredits: () => Promise<void>;
@@ -25,7 +26,7 @@ export const useCredits = (): CreditState => {
   const [freeCreditsResetAt, setFreeCreditsResetAt] = useState<Date | null>(null);
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(true);
-  const [creditCosts, setCreditCosts] = useState({ reel_analysis: 2, seo_optimizer: 1 });
+  const [creditCosts, setCreditCosts] = useState({ reel_analysis: 2, seo_optimizer: 2 });
 
   // Load credit costs from config
   useEffect(() => {
@@ -38,7 +39,7 @@ export const useCredits = (): CreditState => {
         const costs = { ...creditCosts };
         for (const row of data) {
           if (row.config_key === "credit_cost_reel_analysis") costs.reel_analysis = parseInt(row.config_value) || 2;
-          if (row.config_key === "credit_cost_seo_optimizer") costs.seo_optimizer = parseInt(row.config_value) || 1;
+          if (row.config_key === "credit_cost_seo_optimizer") costs.seo_optimizer = parseInt(row.config_value) || 2;
         }
         setCreditCosts(costs);
       }
@@ -175,6 +176,12 @@ export const useCredits = (): CreditState => {
     [user, paidCredits]
   );
 
+  const creditCostDisplay = {
+    reel: "2 credits",
+    youtube: "2 credits",
+    seo: "2 credits",
+  };
+
   return {
     freeCredits,
     paidCredits,
@@ -184,6 +191,7 @@ export const useCredits = (): CreditState => {
     referralCode,
     loading,
     creditCosts,
+    creditCostDisplay,
     canAfford,
     deductCredits,
     refreshCredits,
