@@ -337,12 +337,12 @@ const PricingPage = () => {
       </section>
 
       {/* Credit usage info */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-8 pb-16 sm:pb-24">
+      <section className="max-w-6xl mx-auto px-4 sm:px-8 pb-16 sm:pb-24">
         <div className="text-center mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">How Credits Work</h2>
           <p className="text-muted-foreground text-sm">Simple credit-based system — no subscriptions, no hidden fees.</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { icon: "🎯", title: "Reel Analysis", cost: "2 credits", desc: "Full report with viral score, hook analysis, and PDF export" },
             { icon: "🎬", title: "YouTube Shorts", cost: "2 credits", desc: "Viral potential score with YouTube algorithm insights" },
