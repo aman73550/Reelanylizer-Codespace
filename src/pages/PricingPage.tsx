@@ -15,7 +15,7 @@ const DEFAULT_PLANS = [
     name: "Free",
     id: "free",
     price: 0,
-    credits: 10,
+    credits: 5,
     perCredit: "Free",
     icon: "🏛️",
     color: "from-slate-500 to-slate-600",
@@ -23,7 +23,7 @@ const DEFAULT_PLANS = [
     accentText: "text-slate-600",
     accentBorder: "border-slate-200",
     btnClass: "bg-slate-500 hover:bg-slate-600",
-    features: ["10 Monthly Credits", "Standard Video Analysis", "Standard SEO Audits", "Low Priority Processing", "Standard Support", "Monthly Reset"],
+    features: ["5 Monthly Credits (Rollover)", "Standard Video Analysis", "Standard SEO Audits", "Low Priority Processing", "Standard Support", "Monthly Reset"],
     highlight: false,
     badge: null,
   },
@@ -78,11 +78,11 @@ const DEFAULT_PLANS = [
 ];
 
 const FAQ = [
-  { q: "Do credits expire?", a: "Paid credits (Starter, Pro, Power plans) never expire. Free plan credits (10/month) reset monthly." },
+  { q: "Do credits expire?", a: "Paid credits (Starter, Pro, Power plans) never expire. Free plan credits (5/month) roll over and never expire." },
   { q: "How many credits does analysis cost?", a: "Instagram Reel Analysis costs 2 credits. YouTube Shorts Analysis costs 2 credits. SEO Optimizer costs 1 credit." },
   { q: "Can I get a refund?", a: "We offer refunds within 24 hours if no credits have been used. 100% money-back guarantee." },
   { q: "Is payment secure?", a: "Yes, all payments are processed securely via Razorpay with bank-grade encryption and SSL protection." },
-  { q: "Do I need a credit card for Free plan?", a: "No card required for the Free plan! Get 10 monthly credits just by signing up." },
+  { q: "Do I need a credit card for Free plan?", a: "No card required for the Free plan! Get 5 monthly credits just by signing up — they roll over if unused." },
   { q: "Which plan is best for me?", a: "Free for trying it out, Starter for casual creators, Pro for active creators, Power for teams and agencies." },
 ];
 
@@ -233,7 +233,7 @@ const PricingPage = () => {
         >
           <Crown className="w-5 h-5 text-primary" />
           <span className="text-sm font-medium text-foreground">
-            Get started free with <strong className="text-primary">10 monthly credits</strong> in the Free plan — no card required
+            Get started free with <strong className="text-primary">5 monthly credits</strong> in the Free plan — no card required
           </span>
         </motion.div>
       </section>
@@ -322,7 +322,7 @@ const PricingPage = () => {
           <p className="text-sm font-medium text-foreground">Paid credits never expire. Use them anytime.</p>
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-primary" />5 free credits every month
+              <Zap className="w-3.5 h-3.5 text-primary" />5 free credits every month — with rollover
             </span>
             <span className="hidden sm:inline text-border">|</span>
             <span className="flex items-center gap-1.5">
@@ -346,7 +346,7 @@ const PricingPage = () => {
           {[
             { icon: "🎯", title: "Reel Analysis", cost: "2 credits", desc: "Full report with viral score, hook analysis, and PDF export" },
             { icon: "🔍", title: "SEO Optimizer", cost: "1 credit", desc: "Caption, hashtag, and keyword optimization" },
-            { icon: "🎁", title: "Free Monthly", cost: "5 credits", desc: "Every user gets 5 free credits each month" },
+            { icon: "🎁", title: "Free Monthly", cost: "5 credits", desc: "Every user gets 5 free credits each month — credits roll over if unused" },
           ].map((item, i) => (
             <motion.div
               key={i}
