@@ -15,30 +15,34 @@ import {
   Users,
   Calendar,
   CreditCard,
-  Settings,
   IndianRupee,
   FileText,
   MessageCircle,
-  Key,
   Menu,
   X,
   Zap,
   Activity,
+  LineChart,
 } from "lucide-react";
-import AdminApiKeysManager from "@/components/AdminApiKeysManager";
 import AdminUserManagement from "@/components/AdminUserManagement";
 import AdminPaymentDashboard from "@/components/AdminPaymentDashboard";
 import AdminPricingManager from "@/components/AdminPricingManager";
+import AdminAiChat from "@/components/AdminAiChat";
+import AdminManageCreators from "@/components/AdminManageCreators";
+import AdminTrafficAnalytics from "@/components/AdminTrafficAnalytics";
+import AdminUsageAnalyzer from "@/components/AdminUsageAnalyzer";
 
-type AdminSection = "dashboard" | "users" | "payments" | "config" | "api-keys" | "pricing";
+type AdminSection = "dashboard" | "users" | "payments" | "pricing" | "ai-chat" | "creators" | "traffic" | "usage";
 
 const SIDEBAR_ITEMS: { id: AdminSection; label: string; icon: any; emoji: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, emoji: "📊" },
   { id: "users", label: "User Management", icon: Users, emoji: "👥" },
   { id: "payments", label: "Payments", icon: CreditCard, emoji: "💳" },
   { id: "pricing", label: "Plans & Pricing", icon: Zap, emoji: "💰" },
-  { id: "config", label: "Payment & Config", icon: Settings, emoji: "⚙️" },
-  { id: "api-keys", label: "API Keys", icon: Key, emoji: "🔑" },
+  { id: "ai-chat", label: "AI Assistant", icon: Activity, emoji: "🤖" },
+  { id: "creators", label: "Manage Creators", icon: Users, emoji: "⭐" },
+  { id: "traffic", label: "Traffic Analytics", icon: LineChart, emoji: "📈" },
+  { id: "usage", label: "Usage Analytics", icon: TrendingUp, emoji: "📊" },
 ];
 
 const AdminDashboard = () => {
@@ -498,10 +502,14 @@ const AdminDashboard = () => {
         return <AdminPaymentDashboard />;
       case "pricing":
         return <AdminPricingManager />;
-      case "config":
-        return renderConfig();
-      case "api-keys":
-        return <AdminApiKeysManager />;
+      case "ai-chat":
+        return <AdminAiChat />;
+      case "creators":
+        return <AdminManageCreators />;
+      case "traffic":
+        return <AdminTrafficAnalytics />;
+      case "usage":
+        return <AdminUsageAnalyzer />;
       default:
         return renderDashboard();
     }
