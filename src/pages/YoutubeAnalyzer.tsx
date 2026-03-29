@@ -775,10 +775,10 @@ const YoutubeAnalyzer = () => {
 
           {/* Modern CTA Section */}
           <section className="relative overflow-hidden my-16 sm:my-20">
-            {/* Gradient Background */}
+            {/* Gradient Background - Matches website lavender theme */}
             <div className="absolute inset-0 z-0" style={{
-              background: "linear-gradient(135deg, #667EEA 0%, #764BA2 100%)",
-              opacity: 0.95
+              background: "linear-gradient(180deg, #F5F7FF 0%, #FFFFFF 100%)",
+              opacity: 1
             }} />
             
             {/* Decorative elements */}
@@ -795,43 +795,43 @@ const YoutubeAnalyzer = () => {
 
             {/* Content */}
             <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-24">
-              <div className="bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 p-8 sm:p-12 md:p-16 text-center space-y-6">
+              <div className="bg-white/60 backdrop-blur-md rounded-3xl border border-indigo-200/50 p-8 sm:p-12 md:p-16 text-center space-y-6 shadow-lg">
                 {/* Icon */}
                 <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                    <TrendingUp className="w-8 h-8 text-white" />
+                  <div className="w-16 h-16 rounded-full bg-indigo-100/50 flex items-center justify-center backdrop-blur-sm">
+                    <TrendingUp className="w-8 h-8 text-indigo-600" />
                   </div>
                 </div>
 
                 {/* Heading */}
                 <div className="space-y-3">
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-[-0.02em]">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground leading-tight tracking-[-0.02em]">
                     Ready to Grow Your YouTube Shorts?
                   </h2>
-                  <p className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto">
+                  <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
                     Get free analysis with 5 monthly credits. No payment required. Start optimizing today.
                   </p>
                 </div>
 
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6">
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <Zap className="w-5 h-5 text-white" />
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-indigo-50/50 backdrop-blur-sm border border-indigo-100/50">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <p className="text-sm font-medium text-white">Instant Analysis</p>
+                    <p className="text-sm font-medium text-foreground">Instant Analysis</p>
                   </div>
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-white" />
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-indigo-50/50 backdrop-blur-sm border border-indigo-100/50">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <p className="text-sm font-medium text-white">Viral Score</p>
+                    <p className="text-sm font-medium text-foreground">Viral Score</p>
                   </div>
-                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm">
-                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                      <ShieldCheck className="w-5 h-5 text-white" />
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-indigo-50/50 backdrop-blur-sm border border-indigo-100/50">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5 text-indigo-600" />
                     </div>
-                    <p className="text-sm font-medium text-white">Actionable Tips</p>
+                    <p className="text-sm font-medium text-foreground">Actionable Tips</p>
                   </div>
                 </div>
 
@@ -839,8 +839,8 @@ const YoutubeAnalyzer = () => {
                 <div className="pt-4">
                   <Button 
                     onClick={scrollToInput}
-                    className="h-14 px-8 sm:px-12 bg-white text-indigo-600 font-bold rounded-xl border-0 text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 active:scale-95"
-                    style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
+                    className="h-14 px-8 sm:px-12 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold rounded-xl border-0 text-base sm:text-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95"
+                    style={{ boxShadow: "0 10px 30px rgba(99,102,241,0.2)" }}
                   >
                     <TrendingUp className="w-5 h-5 mr-2" />
                     Analyze Your Shorts Now

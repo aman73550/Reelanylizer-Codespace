@@ -198,8 +198,8 @@ const AdminApiKeysManager = () => {
                 </div>
               </div>
 
-              {/* Existing Keys */}
-              {groupKeys.length > 0 && (
+              {/* Existing Keys - Only show when visible */}
+              {isVisible && groupKeys.length > 0 && (
                 <div className="space-y-1.5">
                   {groupKeys.map((key, idx) => (
                     <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border/30">
@@ -220,8 +220,8 @@ const AdminApiKeysManager = () => {
                 </div>
               )}
 
-              {/* Add New Key */}
-              {groupKeys.length < group.maxKeys && (
+              {/* Add New Key - Only show when visible */}
+              {isVisible && groupKeys.length < group.maxKeys &&(
                 <div className="flex gap-2">
                   <Input
                     type="password"
@@ -242,28 +242,30 @@ const AdminApiKeysManager = () => {
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => saveKeysForGroup(group.configKey)}
-                  disabled={saving}
-                  className="h-7 text-[10px] sm:text-xs"
-                >
-                  {saving ? "Saving..." : "Save Keys"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => testKeys(group.configKey)}
-                  disabled={testing === group.configKey}
-                  className="h-7 text-[10px] sm:text-xs"
-                >
-                  <RefreshCw className={`w-3 h-3 mr-1 ${testing === group.configKey ? "animate-spin" : ""}`} />
-                  Validate
-                </Button>
-              </div>
+              {/* Actions - Only show when visible */}
+              {isVisible && (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => saveKeysForGroup(group.configKey)}
+                    disabled={saving}
+                    className="h-7 text-[10px] sm:text-xs"
+                  >
+                    {saving ? "Saving..." : "Save Keys"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => testKeys(group.configKey)}
+                    disabled={testing === group.configKey}
+                    className="h-7 text-[10px] sm:text-xs"
+                  >
+                    <RefreshCw className={`w-3 h-3 mr-1 ${testing === group.configKey ? "animate-spin" : ""}`} />
+                    Validate
+                  </Button>
+                </div>
+              )}
             </div>
           );
         })}
