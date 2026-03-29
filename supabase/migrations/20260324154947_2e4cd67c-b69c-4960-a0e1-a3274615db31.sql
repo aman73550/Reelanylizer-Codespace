@@ -1,0 +1,6 @@
+
+ALTER TABLE public.creators 
+ADD COLUMN IF NOT EXISTS social_url text DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS monthly_views text DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS instagram_url text DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS youtube_url text DEFAULT NULL;
