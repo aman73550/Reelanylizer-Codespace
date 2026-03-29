@@ -773,18 +773,86 @@ const YoutubeAnalyzer = () => {
 
           <ReviewsGrid />
 
-          {/* CTA Section */}
-          <section className="max-w-2xl mx-auto px-4 sm:px-6 py-14 text-center space-y-4 border-t border-border">
-            <h2 className="text-2xl font-bold text-foreground">Ready to Grow Your YouTube Shorts?</h2>
-            <p className="text-muted-foreground">Get free analysis with 5 monthly credits. No payment required.</p>
-            <Button 
-              onClick={scrollToInput}
-              className="cta-gradient text-white font-semibold rounded-xl border-0"
-              style={{ height: '50px', width: '100%', maxWidth: '300px', margin: '0 auto', display: 'block' }}
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Analyze Your Shorts Now
-            </Button>
+          {/* Modern CTA Section */}
+          <section className="relative overflow-hidden my-16 sm:my-20">
+            {/* Gradient Background */}
+            <div className="absolute inset-0 z-0" style={{
+              background: "linear-gradient(135deg, #667EEA 0%, #764BA2 100%)",
+              opacity: 0.95
+            }} />
+            
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-96 h-96 rounded-full" style={{
+              background: "rgba(255, 255, 255, 0.1)",
+              filter: "blur(80px)",
+              transform: "translate(50%, -50%)"
+            }} />
+            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full" style={{
+              background: "rgba(255, 255, 255, 0.05)",
+              filter: "blur(80px)",
+              transform: "translate(-50%, 50%)"
+            }} />
+
+            {/* Content */}
+            <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-24">
+              <div className="bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 p-8 sm:p-12 md:p-16 text-center space-y-6">
+                {/* Icon */}
+                <div className="flex justify-center">
+                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+
+                {/* Heading */}
+                <div className="space-y-3">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-[-0.02em]">
+                    Ready to Grow Your YouTube Shorts?
+                  </h2>
+                  <p className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto">
+                    Get free analysis with 5 monthly credits. No payment required. Start optimizing today.
+                  </p>
+                </div>
+
+                {/* Features Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-6">
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                      <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-sm font-medium text-white">Instant Analysis</p>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-sm font-medium text-white">Viral Score</p>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                      <ShieldCheck className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-sm font-medium text-white">Actionable Tips</p>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="pt-4">
+                  <Button 
+                    onClick={scrollToInput}
+                    className="h-14 px-8 sm:px-12 bg-white text-indigo-600 font-bold rounded-xl border-0 text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 active:scale-95"
+                    style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.2)" }}
+                  >
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    Analyze Your Shorts Now
+                  </Button>
+                </div>
+
+                {/* Bottom Text */}
+                <p className="text-sm text-white/70 pt-4">
+                  🎁 Free forever • 5 credits every month • No credit card needed
+                </p>
+              </div>
+            </div>
           </section>
 
           {/* About Section */}
