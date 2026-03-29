@@ -377,6 +377,27 @@ const Index = () => {
                 Paste your Instagram Reel link and get a smart viral potential score with actionable insights. Get 5 free credits every month — no payment needed.
               </motion.p>
 
+              {/* Powered by Leading AI Models */}
+              <motion.div 
+                className="flex flex-col items-center lg:items-start gap-3 mb-10"
+                initial={{ opacity: 0, y: 15 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.35, duration: 0.6 }}
+              >
+                <p style={{ fontSize: "13px", color: "#6B7280" }} className="font-medium">Powered by Leading AI Models</p>
+                <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
+                  <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
+                    GPT-5.2 / 5.4
+                  </div>
+                  <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
+                    Claude Opus 4.5
+                  </div>
+                  <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
+                    Gemini 3 Pro
+                  </div>
+                </div>
+              </motion.div>
+
               {/* Input Card */}
               <motion.div ref={inputRef} className="w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                 <div className="p-6 sm:p-8 space-y-4 rounded-2xl border border-[#E5E7EB] bg-white/80 backdrop-blur-sm" style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" }}>

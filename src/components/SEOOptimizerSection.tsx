@@ -136,6 +136,27 @@ const SEOOptimizerSection = () => {
                       : "Unlock trending titles, hashtags, music, and content improvement tips for your Instagram Reels."}
                   </motion.p>
 
+                  {/* Powered by Leading AI Models */}
+                  <motion.div 
+                    className="flex flex-col items-center lg:items-start gap-3 mb-8"
+                    initial={{ opacity: 0, y: 15 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.3, duration: 0.6 }}
+                  >
+                    <p style={{ fontSize: "13px", color: "#6B7280" }} className="font-medium">Powered by Leading AI Models</p>
+                    <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
+                      <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
+                        GPT-5.2 / 5.4
+                      </div>
+                      <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
+                        Claude Opus 4.5
+                      </div>
+                      <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
+                        Gemini 3 Pro
+                      </div>
+                    </div>
+                  </motion.div>
+
                   {/* Feature Icons */}
                   <motion.div
                     className="flex items-center justify-center lg:justify-start gap-3 mb-8"
