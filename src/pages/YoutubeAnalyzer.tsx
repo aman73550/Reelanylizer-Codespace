@@ -343,76 +343,159 @@ const YoutubeAnalyzer = () => {
       )}
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden hero-bg">
-        {/* Soft purple glow behind right side */}
-        <div className="absolute right-[-100px] top-[20%] w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.04) 50%, transparent 70%)" }} />
-        <div className="absolute right-[10%] bottom-0 w-[400px] h-[300px] pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(236,72,153,0.06) 0%, transparent 70%)" }} />
+      <section className="relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 hero-bg" />
+        
+        {/* Decorative glows */}
+        <div className="absolute right-[-120px] top-[15%] w-[450px] h-[450px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.05) 40%, transparent 65%)" }} />
+        <div className="absolute right-[5%] bottom-[-50px] w-[350px] h-[350px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 60%)" }} />
+        <div className="absolute left-[-80px] top-[10%] w-[300px] h-[300px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 65%)" }} />
 
-        <div className="relative max-w-[1200px] mx-auto px-6 sm:px-8 pt-16 sm:pt-20 pb-12 sm:pb-20">
+        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 pt-12 sm:pt-16 md:pt-20 lg:pt-24 pb-12 sm:pb-16 md:pb-20 lg:pb-28">
           {/* Top Badge - centered */}
-          <motion.div className="flex justify-center mb-10 sm:mb-12" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium" style={{ background: "#EEF2FF", color: "#6366F1" }}>
-              <Wand2 className="w-4 h-4" />
-              5 Free Credits Every Month — No Card Required
+          <motion.div 
+            className="flex justify-center mb-8 sm:mb-10 md:mb-12 lg:mb-14"
+            initial={{ opacity: 0, y: -15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.08, duration: 0.5 }}
+          >
+            <div className="inline-flex items-center gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium border border-indigo-200 shadow-sm" style={{ background: "#EEF2FF", color: "#4F46E5" }}>
+              <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span>10 Free Credits Every Month — No Card Required</span>
             </div>
           </motion.div>
 
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-4">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16">
             {/* Left Column: Title + Subtitle + Input */}
-            <div className="flex-1 w-full max-w-[620px]">
+            <div className="flex-1 w-full">
               <motion.h1 
-                className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[54px] font-extrabold text-foreground mb-5 tracking-[-0.02em] leading-[1.1] text-center lg:text-left"
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-4 sm:mb-5 md:mb-6 tracking-[-0.02em] leading-[1.08] text-center lg:text-left"
+                initial={{ opacity: 0, y: 25 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.15, duration: 0.6 }}
               >
                 Free YouTube Shorts{" "}
                 <span className="gradient-primary">Analyzer</span>
               </motion.h1>
+              
               <motion.p 
-                className="text-[16px] sm:text-[17px] text-center lg:text-left mb-10 leading-[1.75] max-w-[480px] mx-auto lg:mx-0 text-muted-foreground"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                className="text-base sm:text-lg md:text-[17px] text-center lg:text-left mb-8 sm:mb-10 md:mb-12 leading-relaxed text-muted-foreground max-w-none lg:max-w-xl"
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.25, duration: 0.6 }}
               >
-                Paste your YouTube Shorts link and get a smart viral potential score with actionable insights. Get 5 free credits every month — no payment needed.
+                Paste your YouTube Shorts link and get a smart viral potential score with instant, actionable insights. Get 10 free credits monthly — no payment required.
               </motion.p>
 
               {/* Input Card */}
-              <motion.div ref={inputRef} className="w-full" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <div className="p-6 sm:p-8 space-y-4 rounded-2xl border border-[#E5E7EB] bg-white/80 backdrop-blur-sm" style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" }}>
-                  <div className="relative">
-                    <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <motion.div 
+                ref={inputRef} 
+                className="w-full"
+                initial={{ opacity: 0, y: 25 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.35, duration: 0.6 }}
+              >
+                <div className="p-5 sm:p-6 md:p-8 space-y-3 sm:space-y-4 rounded-2xl border border-indigo-100/50 bg-gradient-to-br from-white/95 to-indigo-50/30 backdrop-blur-md" style={{ boxShadow: "0 8px 32px -4px rgba(99,102,241,0.12), 0 2px 4px rgba(0,0,0,0.03)" }}>
+                  {/* Input with icon */}
+                  <div className="relative group">
+                    <LinkIcon className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-muted-foreground group-focus-within:text-indigo-600 transition-colors" />
                     <Input 
                       placeholder="https://www.youtube.com/shorts/..." 
                       value={url} 
                       onChange={(e) => setUrl(e.target.value)} 
-                      className="pl-12 border-[#E5E7EB] text-[15px] rounded-xl input-focus-glow" 
-                      style={{ height: '56px', background: '#F9FAFB' }} 
+                      className="pl-10 sm:pl-12 border-indigo-100/60 text-sm sm:text-[15px] rounded-xl input-focus-glow bg-white/70" 
+                      style={{ height: '48px', minHeight: '48px' }} 
                     />
                   </div>
 
-                  <button type="button" onClick={() => setShowDetails(!showDetails)} className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-border text-[13px] transition-colors bg-secondary text-muted-foreground">
-                    <span className="flex items-center gap-2"><Wand2 className="w-3.5 h-3.5 text-primary" /> Boost Accuracy — Add Details</span>
-                    {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {/* Collapsible details button */}
+                  <button 
+                    type="button" 
+                    onClick={() => setShowDetails(!showDetails)} 
+                    className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl border border-indigo-100/50 text-xs sm:text-sm transition-all duration-200 bg-indigo-50/40 hover:bg-indigo-50/70 text-muted-foreground hover:text-foreground group"
+                  >
+                    <span className="flex items-center gap-2 font-medium">
+                      <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 group-hover:scale-110 transition-transform" /> 
+                      <span className="hidden sm:inline">Boost Accuracy — Add Details</span>
+                      <span className="sm:hidden">Add Details</span>
+                    </span>
+                    {showDetails ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
                   </button>
 
                   <AnimatePresence>
                     {showDetails && (
-                      <motion.div className="space-y-3" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
-                        <Input placeholder={t.captionPlaceholder} value={caption} onChange={(e) => setCaption(e.target.value)} className="border-[#E5E7EB] h-11 text-sm rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} />
-                        <Input placeholder={t.hashtagPlaceholder} value={hashtags} onChange={(e) => setHashtags(e.target.value)} className="border-[#E5E7EB] h-11 text-sm rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} />
-                        <button type="button" onClick={() => setShowMetrics(!showMetrics)} className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-border text-xs transition-colors bg-secondary text-muted-foreground">
+                      <motion.div className="space-y-3 pt-1" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
+                        <Input 
+                          placeholder={t.captionPlaceholder} 
+                          value={caption} 
+                          onChange={(e) => setCaption(e.target.value)} 
+                          className="border-indigo-100/50 h-10 sm:h-11 text-xs sm:text-sm rounded-lg sm:rounded-xl input-focus-glow bg-white/70" 
+                        />
+                        <Input 
+                          placeholder={t.hashtagPlaceholder} 
+                          value={hashtags} 
+                          onChange={(e) => setHashtags(e.target.value)} 
+                          className="border-indigo-100/50 h-10 sm:h-11 text-xs sm:text-sm rounded-lg sm:rounded-xl input-focus-glow bg-white/70" 
+                        />
+                        
+                        {/* Metrics trigger */}
+                        <button 
+                          type="button" 
+                          onClick={() => setShowMetrics(!showMetrics)} 
+                          className="w-full flex items-center justify-between px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-indigo-100/50 text-xs sm:text-sm font-medium transition-all duration-200 bg-indigo-50/30 hover:bg-indigo-50/60 text-muted-foreground hover:text-foreground"
+                        >
                           <span>{t.metricsLabel}</span>
-                          {showMetrics ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                          {showMetrics ? <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                         </button>
+                        
                         <AnimatePresence>
                           {showMetrics && (
-                            <motion.div className="space-y-2" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
+                            <motion.div className="space-y-2 pt-1" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3 }}>
                               <div className="grid grid-cols-2 gap-2">
-                                <Input type="number" placeholder={t.likesPlaceholder} value={likes} onChange={(e) => setLikes(e.target.value)} className="border-[#E5E7EB] h-9 text-xs rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} />
-                                <Input type="number" placeholder={t.commentsPlaceholder} value={comments} onChange={(e) => setComments(e.target.value)} className="border-[#E5E7EB] h-9 text-xs rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} />
-                                <Input type="number" placeholder={t.viewsPlaceholder} value={views} onChange={(e) => setViews(e.target.value)} className="border-[#E5E7EB] h-9 text-xs rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} />
-                                <Input type="number" placeholder={t.sharesPlaceholder} value={shares} onChange={(e) => setShares(e.target.value)} className="border-[#E5E7EB] h-9 text-xs rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} />
-                                <Input type="number" placeholder={t.savesPlaceholder} value={saves} onChange={(e) => setSaves(e.target.value)} className="border-[#E5E7EB] h-9 text-xs rounded-xl input-focus-glow col-span-2 sm:col-span-1" style={{ background: '#F9FAFB' }} />
+                                <Input 
+                                  type="number" 
+                                  placeholder={t.likesPlaceholder} 
+                                  value={likes} 
+                                  onChange={(e) => setLikes(e.target.value)} 
+                                  className="border-indigo-100/50 h-9 text-xs rounded-lg input-focus-glow bg-white/70" 
+                                />
+                                <Input 
+                                  type="number" 
+                                  placeholder={t.commentsPlaceholder} 
+                                  value={comments} 
+                                  onChange={(e) => setComments(e.target.value)} 
+                                  className="border-indigo-100/50 h-9 text-xs rounded-lg input-focus-glow bg-white/70" 
+                                />
+                                <Input 
+                                  type="number" 
+                                  placeholder={t.viewsPlaceholder} 
+                                  value={views} 
+                                  onChange={(e) => setViews(e.target.value)} 
+                                  className="border-indigo-100/50 h-9 text-xs rounded-lg input-focus-glow bg-white/70" 
+                                />
+                                <Input 
+                                  type="number" 
+                                  placeholder={t.sharesPlaceholder} 
+                                  value={shares} 
+                                  onChange={(e) => setShares(e.target.value)} 
+                                  className="border-indigo-100/50 h-9 text-xs rounded-lg input-focus-glow bg-white/70" 
+                                />
+                                <Input 
+                                  type="number" 
+                                  placeholder={t.savesPlaceholder} 
+                                  value={saves} 
+                                  onChange={(e) => setSaves(e.target.value)} 
+                                  className="border-indigo-100/50 h-9 text-xs rounded-lg input-focus-glow bg-white/70 col-span-2 sm:col-span-1" 
+                                />
                               </div>
-                              <Textarea placeholder={t.sampleCommentsPlaceholder} value={sampleComments} onChange={(e) => setSampleComments(e.target.value)} className="border-[#E5E7EB] text-xs min-h-[70px] resize-none rounded-xl input-focus-glow" style={{ background: '#F9FAFB' }} rows={3} />
+                              <Textarea 
+                                placeholder={t.sampleCommentsPlaceholder} 
+                                value={sampleComments} 
+                                onChange={(e) => setSampleComments(e.target.value)} 
+                                className="border-indigo-100/50 text-xs min-h-[65px] sm:min-h-[70px] resize-none rounded-lg sm:rounded-xl input-focus-glow bg-white/70" 
+                                rows={3} 
+                              />
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -423,37 +506,44 @@ const YoutubeAnalyzer = () => {
                   <Button 
                     onClick={handleAnalyze} 
                     disabled={loading || analyzeDisabled} 
-                    className="w-full cta-gradient text-white font-semibold text-[15px] rounded-xl border-0 transition-all duration-200"
-                    style={{ height: '56px' }}
+                    className="w-full cta-gradient text-white font-semibold text-sm sm:text-base rounded-lg sm:rounded-xl border-0 transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/30"
+                    style={{ height: '48px', minHeight: '48px' }}
                   >
-                    {loading ? (<><Loader2 className="w-4 h-4 mr-2 animate-spin" />{t.analyzing}</>) : (<><TrendingUp className="w-4 h-4 mr-2" />{t.analyzeBtn}</>)}
+                    {loading ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /><span className="hidden sm:inline">{t.analyzing}</span><span className="sm:hidden">Analyzing...</span></>
+                    ) : (
+                      <><TrendingUp className="w-4 h-4 mr-2" />{t.analyzeBtn}</>
+                    )}
                   </Button>
 
                   {user ? (
-                    <p className="text-center text-[13px] pt-1 text-muted-foreground">
+                    <p className="text-center text-xs sm:text-[13px] pt-1.5 sm:pt-2 text-muted-foreground">
                       <span className="inline-flex items-center gap-1.5">
-                        <User className="w-3.5 h-3.5" />
-                        {totalCredits > 0 ? `${totalCredits} credit${totalCredits !== 1 ? "s" : ""} remaining` : "No credits remaining"}
+                        <User className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                        <span>{totalCredits > 0 ? `${totalCredits} credit${totalCredits !== 1 ? "s" : ""} available` : "No credits remaining"}</span>
                       </span>
                     </p>
                   ) : (
-                    <button onClick={() => setShowLoginPrompt(true)} className="w-full text-center text-[13px] text-primary hover:underline flex items-center justify-center gap-1.5 pt-1">
-                      <LogIn className="w-3.5 h-3.5" />
-                      Sign in with Google to get 5 free credits
+                    <button 
+                      onClick={() => setShowLoginPrompt(true)} 
+                      className="w-full text-center text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 hover:underline flex items-center justify-center gap-1.5 pt-1.5 sm:pt-2 font-medium transition-colors"
+                    >
+                      <LogIn className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      <span className="hidden sm:inline">Sign in with Google to get 10 free credits</span>
+                      <span className="sm:hidden">Sign in to get credits</span>
                     </button>
                   )}
-                  <p className="text-center text-[11px] pt-0.5 text-muted-foreground/70">Auto-extracts data if you skip optional fields</p>
+                  <p className="text-center text-[10px] sm:text-[11px] pt-0.5 sm:pt-1 text-muted-foreground/60 leading-relaxed">Auto-extracts data if you skip optional fields</p>
                 </div>
               </motion.div>
             </div>
 
-            {/* Right Column: Illustration */}
+            {/* Right Column: Illustration - Responsive on all screens */}
             <motion.div 
-              className="hidden lg:flex flex-shrink-0 items-center justify-center relative"
-              style={{ width: '540px', marginTop: '10px' }}
-              initial={{ opacity: 0, x: 50, scale: 0.92 }} 
+              className="w-full md:w-auto lg:flex-1 flex flex-shrink-0 items-center justify-center relative"
+              initial={{ opacity: 0, x: 50, scale: 0.85 }} 
               animate={{ opacity: 1, x: 0, scale: 1 }} 
-              transition={{ delay: 0.35, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ delay: 0.45, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <img 
                 src={heroIllustration} 
@@ -462,7 +552,7 @@ const YoutubeAnalyzer = () => {
                 height="420" 
                 loading="eager" 
                 decoding="async" 
-                className="w-full h-auto object-contain" 
+                className="w-full max-w-sm md:max-w-md lg:max-w-none lg:w-[500px] h-auto object-contain drop-shadow-lg" 
               />
             </motion.div>
           </div>
