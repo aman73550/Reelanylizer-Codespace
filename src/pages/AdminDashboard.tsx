@@ -8,57 +8,35 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
-  Shield, LogOut, BarChart3, Megaphone, TrendingUp, Users, Eye, Calendar,
-  CreditCard, Settings, IndianRupee, MessageCircle, FileText, Star, Crown,
-  Loader2, Download, ArrowLeft, Search, Key, Menu, X, Zap, Target, Activity
+  Shield,
+  LogOut,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Calendar,
+  CreditCard,
+  Settings,
+  IndianRupee,
+  FileText,
+  MessageCircle,
+  Key,
+  Menu,
+  X,
+  Zap,
+  Activity,
 } from "lucide-react";
-import MasterReportPDF from "@/components/MasterReportPDF";
-import AdminBehaviourSettings from "@/components/AdminBehaviourSettings";
-import AdminAIUsage from "@/components/AdminAIUsage";
 import AdminApiKeysManager from "@/components/AdminApiKeysManager";
-import SEOResultsDisplay from "@/components/SEOResultsDisplay";
-import AdminAIChat from "@/components/AdminAIChat";
-import AdminTrafficIntelligence from "@/components/AdminTrafficIntelligence";
 import AdminUserManagement from "@/components/AdminUserManagement";
-import AdminAdsManager from "@/components/ads/AdminAdsManager";
 import AdminPaymentDashboard from "@/components/AdminPaymentDashboard";
-import AdminCreatorManagement from "@/components/AdminCreatorManagement";
-import AdminProfitAnalysis from "@/components/AdminProfitAnalysis";
 
-
-type AdminSection =
-  | "dashboard"
-  | "users"
-  | "payments"
-  | "profit"
-  | "config"
-  | "api-keys"
-  | "ads"
-  | "reports"
-  | "usage"
-  | "traffic"
-  | "generator"
-  | "seo"
-  | "behaviour"
-  | "feedback"
-  | "creators";
+type AdminSection = "dashboard" | "users" | "payments" | "config" | "api-keys";
 
 const SIDEBAR_ITEMS: { id: AdminSection; label: string; icon: any; emoji: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, emoji: "📊" },
   { id: "users", label: "User Management", icon: Users, emoji: "👥" },
   { id: "payments", label: "Payments", icon: CreditCard, emoji: "💳" },
-  { id: "profit", label: "Profit Analysis", icon: TrendingUp, emoji: "💰" },
   { id: "config", label: "Payment & Config", icon: Settings, emoji: "⚙️" },
   { id: "api-keys", label: "API Keys", icon: Key, emoji: "🔑" },
-  { id: "ads", label: "Ad Slots", icon: Megaphone, emoji: "📢" },
-  { id: "reports", label: "Reports & Logs", icon: FileText, emoji: "📄" },
-  { id: "usage", label: "API Usage", icon: Activity, emoji: "📈" },
-  { id: "traffic", label: "Traffic Intel", icon: Eye, emoji: "🌐" },
-  { id: "generator", label: "Report Generator", icon: Crown, emoji: "👑" },
-  { id: "seo", label: "SEO Optimizer", icon: Search, emoji: "🔍" },
-  { id: "behaviour", label: "Behaviour", icon: Target, emoji: "🎯" },
-  { id: "feedback", label: "User Feedback", icon: Star, emoji: "⭐" },
-  { id: "creators", label: "Creators", icon: Crown, emoji: "🚀" },
 ];
 
 const AdminDashboard = () => {
@@ -66,23 +44,14 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [stats, setStats] = useState({ total: 0, today: 0, week: 0, month: 0 });
   const [paidStats, setPaidStats] = useState({ total: 0, revenue: 0, today: 0, todayRevenue: 0, pending: 0 });
   const [userStats, setUserStats] = useState({ totalUsers: 0, totalUserAnalyses: 0, premiumAnalyses: 0 });
-  const [recentUrls, setRecentUrls] = useState<{ reel_url: string; created_at: string }[]>([]);
-  const [recentReports, setRecentReports] = useState<any[]>([]);
+  const [recentUserAnalyses, setRecentUserAnalyses] = useState<any[]>([]);
+
   const [config, setConfig] = useState<Record<string, string>>({});
   const [savingConfig, setSavingConfig] = useState(false);
-  const [feedbackStats, setFeedbackStats] = useState({ total: 0, avg: 0, distribution: [0, 0, 0, 0, 0] });
-  const [recentFeedback, setRecentFeedback] = useState<any[]>([]);
-  const [adminReelUrl, setAdminReelUrl] = useState("");
-  const [adminGenerating, setAdminGenerating] = useState(false);
-  const [adminReportData, setAdminReportData] = useState<{ analysis: any; premium: any } | null>(null);
-  const [adminShowPdfPreview, setAdminShowPdfPreview] = useState(false);
-  const [adminSeoTopic, setAdminSeoTopic] = useState("");
-  const [adminSeoGenerating, setAdminSeoGenerating] = useState(false);
-  const [adminSeoResults, setAdminSeoResults] = useState<any>(null);
-  const [recentUserAnalyses, setRecentUserAnalyses] = useState<any[]>([]);
   const [cleaningUp, setCleaningUp] = useState(false);
 
   useEffect(() => {
@@ -90,16 +59,28 @@ const AdminDashboard = () => {
   }, []);
 
   const checkAdminAndLoad = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/bosspage-login"); return; }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      navigate("/bosspage-login");
+      return;
+    }
+
     const { data: roles } = await supabase
-      .from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin");
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin");
+
     if (!roles || roles.length === 0) {
       await supabase.auth.signOut();
       navigate("/bosspage-login");
       return;
     }
-    await Promise.all([loadStats(), loadRecentUsage(), loadConfig(), loadPaidStats(), loadRecentReports(), loadFeedback(), loadUserStats()]);
+
+    await Promise.all([loadStats(), loadPaidStats(), loadUserStats(), loadConfig()]);
     setLoading(false);
   };
 
@@ -108,42 +89,62 @@ const AdminDashboard = () => {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const weekStart = new Date(now.getTime() - 7 * 86400000).toISOString();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
     const [total, today, week, month] = await Promise.all([
       supabase.from("usage_logs").select("id", { count: "exact", head: true }),
       supabase.from("usage_logs").select("id", { count: "exact", head: true }).gte("created_at", todayStart),
       supabase.from("usage_logs").select("id", { count: "exact", head: true }).gte("created_at", weekStart),
       supabase.from("usage_logs").select("id", { count: "exact", head: true }).gte("created_at", monthStart),
     ]);
-    setStats({ total: total.count || 0, today: today.count || 0, week: week.count || 0, month: month.count || 0 });
+
+    setStats({
+      total: total.count || 0,
+      today: today.count || 0,
+      week: week.count || 0,
+      month: month.count || 0,
+    });
   };
 
   const loadUserStats = async () => {
     const [userAnalyses, recentUA] = await Promise.all([
-      supabase.from("user_analyses").select("id, analysis_data, viral_score", { count: "exact" }),
-      supabase.from("user_analyses").select("id, reel_url, viral_score, created_at, analysis_data").order("created_at", { ascending: false }).limit(10),
+      supabase.from("user_analyses").select("id, user_id, analysis_data, viral_score", { count: "exact" }),
+      supabase
+        .from("user_analyses")
+        .select("id, reel_url, viral_score, created_at, analysis_data")
+        .order("created_at", { ascending: false })
+        .limit(10),
     ]);
+
     const allUA = userAnalyses.data || [];
     const premiumCount = allUA.filter((a: any) => a.analysis_data?.premiumInsights).length;
-    // Get unique user count from user_analyses
     const uniqueUsers = new Set(allUA.map((a: any) => a.user_id)).size;
+
     setUserStats({
       totalUsers: uniqueUsers || userAnalyses.count || 0,
       totalUserAnalyses: userAnalyses.count || 0,
       premiumAnalyses: premiumCount,
     });
+
     setRecentUserAnalyses(recentUA.data || []);
   };
 
   const loadPaidStats = async () => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+
     const [allPaid, todayPaid, pending] = await Promise.all([
       supabase.from("paid_reports" as any).select("amount, status").in("status", ["paid", "completed"]),
-      supabase.from("paid_reports" as any).select("amount, status").in("status", ["paid", "completed"]).gte("created_at", todayStart),
+      supabase
+        .from("paid_reports" as any)
+        .select("amount, status")
+        .in("status", ["paid", "completed"])
+        .gte("created_at", todayStart),
       supabase.from("paid_reports" as any).select("id", { count: "exact", head: true }).eq("status", "pending"),
     ]);
+
     const allData = (allPaid.data || []) as any[];
     const todayData = (todayPaid.data || []) as any[];
+
     setPaidStats({
       total: allData.length,
       revenue: allData.reduce((s: number, r: any) => s + (Number(r.amount) || 0), 0),
@@ -151,13 +152,6 @@ const AdminDashboard = () => {
       todayRevenue: todayData.reduce((s: number, r: any) => s + (Number(r.amount) || 0), 0),
       pending: pending.count || 0,
     });
-  };
-
-  const loadRecentReports = async () => {
-    const { data } = await supabase.from("paid_reports" as any)
-      .select("id, reel_url, amount, status, created_at, payment_gateway")
-      .order("created_at", { ascending: false }).limit(10);
-    if (data) setRecentReports(data as any[]);
   };
 
   const loadConfig = async () => {
@@ -169,28 +163,22 @@ const AdminDashboard = () => {
     }
   };
 
-  const loadRecentUsage = async () => {
-    const { data } = await supabase.from("usage_logs")
-      .select("reel_url, created_at").order("created_at", { ascending: false }).limit(10);
-    if (data) setRecentUrls(data);
-  };
-
   const updateConfig = (key: string, value: string) => {
-    setConfig(prev => ({ ...prev, [key]: value }));
+    setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
   const saveConfig = async () => {
     setSavingConfig(true);
     try {
       for (const [key, value] of Object.entries(config)) {
-        const { data: existing } = await supabase
-          .from("site_config" as any).select("id").eq("config_key", key).single();
+        const { data: existing } = await supabase.from("site_config" as any).select("id").eq("config_key", key).single();
         if (existing) {
-          await supabase.from("site_config" as any)
-            .update({ config_value: value, updated_at: new Date().toISOString() }).eq("config_key", key);
+          await supabase
+            .from("site_config" as any)
+            .update({ config_value: value, updated_at: new Date().toISOString() })
+            .eq("config_key", key);
         } else {
-          await supabase.from("site_config" as any)
-            .insert({ config_key: key, config_value: value } as any);
+          await supabase.from("site_config" as any).insert({ config_key: key, config_value: value } as any);
         }
       }
       toast.success("Configuration saved!");
@@ -201,140 +189,29 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/bosspage-login");
-  };
-
-  const loadFeedback = async () => {
-    const { data } = await supabase.from("feedback" as any).select("*").order("created_at", { ascending: false }).limit(20);
-    if (!data) return;
-    const all = data as any[];
-    setRecentFeedback(all.slice(0, 10));
-    const dist = [0, 0, 0, 0, 0];
-    let sum = 0;
-    for (const f of all) { dist[f.rating - 1]++; sum += f.rating; }
-    setFeedbackStats({
-      total: all.length,
-      avg: all.length ? Math.round((sum / all.length) * 10) / 10 : 0,
-      distribution: dist,
-    });
-  };
-
-  const handleAdminGenerateReport = async () => {
-    if (!adminReelUrl.trim()) { toast.error("Enter a reel URL"); return; }
-    setAdminGenerating(true);
-    setAdminReportData(null);
-    try {
-      const { data: analysisData, error: analysisErr } = await supabase.functions.invoke("analyze-reel", {
-        body: { url: adminReelUrl.trim() },
-      });
-      if (analysisErr || !analysisData?.success) throw new Error(analysisData?.error || "Analysis failed");
-      const analysis = analysisData.analysis;
-      // Premium insights are now included in the single analyze-reel call
-      const premium = analysis.premiumInsights || {};
-      setAdminReportData({ analysis, premium });
-      toast.success("Full Analysis with Premium Insights generated! 🎉");
-    } catch (err: any) {
-      console.error("Admin report error:", err);
-      toast.error(err.message || "Failed to generate report");
-    } finally {
-      setAdminGenerating(false);
-    }
-  };
-
-  const handleAdminDownloadTxt = () => {
-    if (!adminReportData) return;
-    const { analysis, premium } = adminReportData;
-    const lines: string[] = [];
-    lines.push("═══════════════════════════════════════════");
-    lines.push("       MASTER VIRAL ANALYSIS REPORT");
-    lines.push("       Admin Generated — No Payment");
-    lines.push("═══════════════════════════════════════════");
-    lines.push("");
-    lines.push(`Reel URL: ${adminReelUrl}`);
-    lines.push(`Generated: ${new Date().toLocaleString("en-IN")}`);
-    lines.push(`Viral Score: ${analysis.viralClassification?.score || analysis.viralScore || 0}`);
-    lines.push(`Status: ${analysis.viralClassification?.status || "N/A"}`);
-    lines.push("");
-    if (premium.scoreBreakdown) {
-      lines.push("── SCORE BREAKDOWN ──");
-      Object.entries(premium.scoreBreakdown).forEach(([k, v]) => lines.push(`  ${k}: ${v}/8`));
-      lines.push("");
-    }
-    if (premium.viralityInsights) {
-      lines.push("── VIRALITY INSIGHTS ──");
-      Object.entries(premium.viralityInsights).forEach(([k, v]: [string, any]) => {
-        lines.push(`  ${k}:`);
-        if (v?.impact) lines.push(`    Impact: ${v.impact}`);
-        if (v?.reason) lines.push(`    Reason: ${v.reason}`);
-        if (v?.solution) lines.push(`    Solution: ${v.solution}`);
-      });
-      lines.push("");
-    }
-    if (premium.improvementRoadmap) {
-      lines.push("── 5-STEP IMPROVEMENT ROADMAP ──");
-      premium.improvementRoadmap.forEach((step: any, i: number) => {
-        lines.push(`  Step ${i + 1}: ${step.title || step.step || ""}`);
-        if (step.description) lines.push(`    ${step.description}`);
-      });
-      lines.push("");
-    }
-    if (premium.quickTips) {
-      lines.push("── QUICK TIPS ──");
-      premium.quickTips.forEach((t: string, i: number) => lines.push(`  ${i + 1}. ${t}`));
-      lines.push("");
-    }
-    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = `master-report-admin-${Date.now()}.txt`;
-    a.click();
-    URL.revokeObjectURL(blobUrl);
-  };
-
-  const handleAdminSeoGenerate = async () => {
-    if (!adminSeoTopic.trim()) { toast.error("Enter a topic or context"); return; }
-    setAdminSeoGenerating(true);
-    setAdminSeoResults(null);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
-      const { data, error } = await supabase.functions.invoke("seo-analyze", {
-        body: { topic: adminSeoTopic.trim(), adminFree: true },
-      });
-      if (error || !data?.success) throw new Error(data?.error || error?.message || "SEO analysis failed");
-      setAdminSeoResults(data.data);
-      toast.success("SEO Analysis generated! 🎉");
-    } catch (err: any) {
-      console.error("Admin SEO error:", err);
-      toast.error(err.message || "Failed to generate SEO analysis");
-    } finally {
-      setAdminSeoGenerating(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-
   const handleCleanup = async () => {
     setCleaningUp(true);
     try {
       const { data, error } = await supabase.functions.invoke("cleanup-old-data");
       if (error) throw error;
-      toast.success(`Cleanup done! Deleted: ${data.rate_limits_deleted} rate limits, ${data.usage_logs_deleted} usage logs, ${data.traffic_sessions_deleted} traffic sessions, ${data.api_usage_logs_deleted} API logs`);
+      toast.success(
+        `Cleanup done! Deleted: ${data.rate_limits_deleted} rate limits, ${data.usage_logs_deleted} usage logs, ${data.traffic_sessions_deleted} traffic sessions, ${data.api_usage_logs_deleted} API logs`
+      );
     } catch (err: any) {
       toast.error("Cleanup failed: " + (err.message || "Unknown error"));
     } finally {
       setCleaningUp(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/bosspage-login");
+  };
+
+  const handleSectionChange = (section: AdminSection) => {
+    setActiveSection(section);
+    setSidebarOpen(false);
   };
 
   const statCards = [
@@ -350,14 +227,6 @@ const AdminDashboard = () => {
     { label: "Today Revenue", value: `₹${paidStats.todayRevenue}`, icon: TrendingUp, color: "text-accent" },
     { label: "Pending", value: paidStats.pending, icon: CreditCard, color: "text-[hsl(var(--viral-mid))]" },
   ];
-
-
-  const handleSectionChange = (section: AdminSection) => {
-    setActiveSection(section);
-    setSidebarOpen(false);
-  };
-
-  // ============ SECTION RENDERERS ============
 
   const renderDashboard = () => (
     <div className="space-y-4 sm:space-y-6">
@@ -378,7 +247,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* User & Premium Stats */}
       <div>
         <h2 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">👤 Registered Users & Premium</h2>
         <div className="grid grid-cols-3 gap-2 sm:gap-4">
@@ -403,7 +271,7 @@ const AdminDashboard = () => {
           <Card className="border-border bg-card">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center gap-1.5 mb-1">
-                <Crown className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                <Activity className="w-3.5 h-3.5 text-primary flex-shrink-0" />
                 <span className="text-[10px] sm:text-xs text-muted-foreground">With Premium Data</span>
               </div>
               <p className="text-lg sm:text-2xl font-bold text-foreground">{userStats.premiumAnalyses}</p>
@@ -429,21 +297,25 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Analysis Pricing Status */}
       <div className="p-3 rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <IndianRupee className="w-4 h-4 text-primary" />
             <span className="text-xs sm:text-sm font-semibold text-foreground">Analysis Mode</span>
           </div>
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${config.analysis_pricing_mode === "paid" ? "bg-primary/10 text-primary" : "bg-[hsl(var(--viral-high))]/10 text-[hsl(var(--viral-high))]"}`}>
+          <span
+            className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+              config.analysis_pricing_mode === "paid"
+                ? "bg-primary/10 text-primary"
+                : "bg-[hsl(var(--viral-high))]/10 text-[hsl(var(--viral-high))]"
+            }`}
+          >
             {config.analysis_pricing_mode === "paid" ? `PAID — ₹${config.analysis_price || "10"}` : "FREE"}
           </span>
         </div>
-        <p className="text-[9px] text-muted-foreground mt-1">All analyses now include premium insights (executive summary, roadmap, checklist, etc.)</p>
+        <p className="text-[9px] text-muted-foreground mt-1">Core analytics and payment configuration is active.</p>
       </div>
 
-      {/* Database Cleanup */}
       <div className="p-3 rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between">
           <div>
@@ -451,12 +323,11 @@ const AdminDashboard = () => {
             <p className="text-[9px] text-muted-foreground mt-0.5">Delete old logs (30d), rate limits (7d), traffic sessions (30d)</p>
           </div>
           <Button variant="outline" size="sm" onClick={handleCleanup} disabled={cleaningUp} className="h-8 text-xs">
-            {cleaningUp ? <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Cleaning...</> : "🧹 Clean Now"}
+            {cleaningUp ? "Cleaning..." : "Clean Now"}
           </Button>
         </div>
       </div>
 
-      {/* Recent User Analyses */}
       {recentUserAnalyses.length > 0 && (
         <Card className="border-border bg-card">
           <CardHeader className="px-4 py-3">
@@ -494,7 +365,6 @@ const AdminDashboard = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4">
-        {/* Analysis Pricing Control */}
         <div className="p-3 rounded-xl border-2 border-primary/20 bg-primary/5 space-y-3">
           <div className="flex items-center justify-between">
             <div>
@@ -503,7 +373,9 @@ const AdminDashboard = () => {
                 Analysis Pricing Control
               </Label>
               <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">
-                {config.analysis_pricing_mode === "paid" ? "🔴 PAID MODE — Users must pay to analyze" : "🟢 FREE MODE — Analysis is free for users"}
+                {config.analysis_pricing_mode === "paid"
+                  ? "PAID MODE — Users must pay to analyze"
+                  : "FREE MODE — Analysis is free for users"}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -531,158 +403,80 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label className="text-[10px] sm:text-xs text-muted-foreground">Report Price (₹)</Label>
-            <Input type="number" value={config.report_price || "29"} onChange={(e) => updateConfig("report_price", e.target.value)} className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm" />
+            <Input
+              type="number"
+              value={config.report_price || "29"}
+              onChange={(e) => updateConfig("report_price", e.target.value)}
+              className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm"
+            />
           </div>
           <div className="space-y-1.5">
             <Label className="text-[10px] sm:text-xs text-muted-foreground">Gateway</Label>
-            <select value={config.payment_gateway || "razorpay"} onChange={(e) => updateConfig("payment_gateway", e.target.value)} className="w-full h-8 sm:h-10 px-2 sm:px-3 rounded-md bg-muted/50 border border-border text-foreground text-xs sm:text-sm">
+            <select
+              value={config.payment_gateway || "razorpay"}
+              onChange={(e) => updateConfig("payment_gateway", e.target.value)}
+              className="w-full h-8 sm:h-10 px-2 sm:px-3 rounded-md bg-muted/50 border border-border text-foreground text-xs sm:text-sm"
+            >
               <option value="razorpay">Razorpay</option>
               <option value="stripe">Stripe</option>
             </select>
           </div>
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-[10px] sm:text-xs text-muted-foreground">Razorpay Key ID</Label>
-          <Input value={config.razorpay_key_id || ""} onChange={(e) => updateConfig("razorpay_key_id", e.target.value)} placeholder="rzp_live_..." className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm" />
+          <Input
+            value={config.razorpay_key_id || ""}
+            onChange={(e) => updateConfig("razorpay_key_id", e.target.value)}
+            placeholder="rzp_live_..."
+            className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm"
+          />
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-[10px] sm:text-xs text-muted-foreground">Razorpay Key Secret</Label>
-          <Input type="password" value={config.razorpay_key_secret || ""} onChange={(e) => updateConfig("razorpay_key_secret", e.target.value)} placeholder="••••••••" className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm" />
+          <Input
+            type="password"
+            value={config.razorpay_key_secret || ""}
+            onChange={(e) => updateConfig("razorpay_key_secret", e.target.value)}
+            placeholder="••••••••"
+            className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm"
+          />
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-[10px] sm:text-xs text-muted-foreground">Stripe Key</Label>
-          <Input type="password" value={config.stripe_key || ""} onChange={(e) => updateConfig("stripe_key", e.target.value)} placeholder="sk_live_..." className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm" />
+          <Input
+            type="password"
+            value={config.stripe_key || ""}
+            onChange={(e) => updateConfig("stripe_key", e.target.value)}
+            placeholder="sk_live_..."
+            className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm"
+          />
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1">
             <MessageCircle className="w-3 h-3" /> WhatsApp Number
           </Label>
-          <Input value={config.whatsapp_number || ""} onChange={(e) => updateConfig("whatsapp_number", e.target.value)} placeholder="919876543210" className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm" />
+          <Input
+            value={config.whatsapp_number || ""}
+            onChange={(e) => updateConfig("whatsapp_number", e.target.value)}
+            placeholder="919876543210"
+            className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm"
+          />
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1">
             <FileText className="w-3 h-3" /> Example PDF URL (Sample Report)
           </Label>
-          <Input value={config.example_pdf_url || ""} onChange={(e) => updateConfig("example_pdf_url", e.target.value)} placeholder="https://drive.google.com/file/d/.../preview" className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm" />
-          <p className="text-[9px] text-muted-foreground/60">Paste a direct PDF link or Google Drive embed URL. Leave empty to hide.</p>
-        </div>
-        {/* Free Credits Control */}
-        <div className="p-3 rounded-xl border-2 border-accent/20 bg-accent/5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-accent" />
-            <Label className="text-xs sm:text-sm font-semibold text-foreground">Free Credits System</Label>
-          </div>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground">
-            Control how many free credits each user gets on signup. Each analysis (Reel or SEO) uses 1 credit.
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] sm:text-xs text-muted-foreground">Max Credits Per User</Label>
-              <Input
-                type="number"
-                value={config.user_analysis_limit || "3"}
-                onChange={(e) => updateConfig("user_analysis_limit", e.target.value)}
-                className="bg-background border-border h-8 sm:h-10 text-xs sm:text-sm"
-                min="1"
-                max="100"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[10px] sm:text-xs text-muted-foreground">Default for New Signups</Label>
-              <Input
-                type="number"
-                value={config.default_free_credits || "3"}
-                onChange={(e) => updateConfig("default_free_credits", e.target.value)}
-                className="bg-background border-border h-8 sm:h-10 text-xs sm:text-sm"
-                min="1"
-                max="100"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-background/50 border border-border/50">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground">Unlimited Credits:</span>
-              <Switch
-                checked={config.unlimited_credits === "true"}
-                onCheckedChange={(checked) => updateConfig("unlimited_credits", checked ? "true" : "false")}
-              />
-            </div>
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${config.unlimited_credits === "true" ? "bg-[hsl(var(--viral-high))]/10 text-[hsl(var(--viral-high))]" : "bg-muted text-muted-foreground"}`}>
-              {config.unlimited_credits === "true" ? "ON — No limit" : "OFF — Limited"}
-            </span>
-          </div>
-          <p className="text-[9px] text-muted-foreground/60">
-            💡 When unlimited is ON, users can analyze without any credit restriction. Current limit: <strong className="text-foreground">{config.user_analysis_limit || "3"} credits</strong>
-          </p>
-        </div>
-
-        {/* Credit Pack Pricing Control */}
-        <div className="p-3 rounded-xl border-2 border-primary/20 bg-primary/5 space-y-3">
-          <div className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-primary" />
-            <Label className="text-xs sm:text-sm font-semibold text-foreground">Credit Pack Pricing</Label>
-          </div>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground">
-            Control price and credits for each purchasable pack. Changes reflect on pricing page instantly.
-          </p>
-          {[
-            { key: "starter", label: "Starter" },
-            { key: "popular", label: "Popular" },
-            { key: "pro", label: "Pro" },
-            { key: "power", label: "Power" },
-          ].map((pack) => (
-            <div key={pack.key} className="grid grid-cols-3 gap-2 items-end p-2 rounded-lg bg-background/50 border border-border/50">
-              <div className="space-y-1">
-                <Label className="text-[9px] text-muted-foreground">{pack.label} — Price (₹)</Label>
-                <Input
-                  type="number"
-                  value={config[`pack_${pack.key}_price`] || ""}
-                  onChange={(e) => updateConfig(`pack_${pack.key}_price`, e.target.value)}
-                  placeholder="Default"
-                  className="bg-background border-border h-8 text-xs"
-                  min="1"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-[9px] text-muted-foreground">Credits</Label>
-                <Input
-                  type="number"
-                  value={config[`pack_${pack.key}_credits`] || ""}
-                  onChange={(e) => updateConfig(`pack_${pack.key}_credits`, e.target.value)}
-                  placeholder="Default"
-                  className="bg-background border-border h-8 text-xs"
-                  min="1"
-                />
-              </div>
-              <div className="text-[9px] text-muted-foreground pb-2">
-                {config[`pack_${pack.key}_price`] && config[`pack_${pack.key}_credits`]
-                  ? `₹${(Number(config[`pack_${pack.key}_price`]) / Number(config[`pack_${pack.key}_credits`])).toFixed(1)}/credit`
-                  : "Using default"}
-              </div>
-            </div>
-          ))}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] sm:text-xs text-muted-foreground">Reel Analysis Cost (credits)</Label>
-              <Input
-                type="number"
-                value={config.credit_cost_reel_analysis || "2"}
-                onChange={(e) => updateConfig("credit_cost_reel_analysis", e.target.value)}
-                className="bg-background border-border h-8 sm:h-10 text-xs sm:text-sm"
-                min="1"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[10px] sm:text-xs text-muted-foreground">SEO Optimizer Cost (credits)</Label>
-              <Input
-                type="number"
-                value={config.credit_cost_seo_optimizer || "1"}
-                onChange={(e) => updateConfig("credit_cost_seo_optimizer", e.target.value)}
-                className="bg-background border-border h-8 sm:h-10 text-xs sm:text-sm"
-                min="1"
-              />
-            </div>
-          </div>
+          <Input
+            value={config.example_pdf_url || ""}
+            onChange={(e) => updateConfig("example_pdf_url", e.target.value)}
+            placeholder="https://drive.google.com/file/d/.../preview"
+            className="bg-muted/50 border-border h-8 sm:h-10 text-xs sm:text-sm"
+          />
         </div>
 
         <Button onClick={saveConfig} disabled={savingConfig} className="w-full gradient-primary-bg text-primary-foreground h-9 sm:h-10 text-xs sm:text-sm">
@@ -692,243 +486,35 @@ const AdminDashboard = () => {
     </Card>
   );
 
-
-  const renderReports = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-      <Card className="border-border bg-card">
-        <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-            <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-[hsl(var(--viral-high))] flex-shrink-0" />
-            Recent Paid Reports
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-          {recentReports.length === 0 ? (
-            <p className="text-xs sm:text-sm text-muted-foreground">No paid reports yet</p>
-          ) : (
-            <div className="space-y-1.5 sm:space-y-2">
-              {recentReports.map((r: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg bg-muted/20 text-[10px] sm:text-xs gap-2">
-                  <div className="min-w-0 flex-1">
-                    <span className="text-foreground truncate block max-w-[120px] sm:max-w-[180px]">{r.reel_url}</span>
-                    <span className="text-muted-foreground text-[9px] sm:text-[10px]">{new Date(r.created_at).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                    <span className="font-medium text-foreground">₹{r.amount}</span>
-                    <span className={`px-1 sm:px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] ${r.status === "completed" || r.status === "paid" ? "bg-[hsl(var(--viral-high))]/20 text-[hsl(var(--viral-high))]" : "bg-[hsl(var(--viral-mid))]/20 text-[hsl(var(--viral-mid))]"}`}>
-                      {r.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      <Card className="border-border bg-card">
-        <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-            <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-secondary flex-shrink-0" />
-            Recent Free Analyses
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-          {recentUrls.length === 0 ? (
-            <p className="text-xs sm:text-sm text-muted-foreground">No analyses yet</p>
-          ) : (
-            <div className="space-y-1.5 sm:space-y-2">
-              {recentUrls.map((u, i) => (
-                <div key={i} className="flex items-center justify-between p-2 sm:p-2.5 rounded-lg bg-muted/20 text-[10px] sm:text-xs gap-2">
-                  <span className="text-foreground truncate min-w-0 flex-1">{u.reel_url}</span>
-                  <span className="text-muted-foreground whitespace-nowrap flex-shrink-0 text-[9px] sm:text-xs">{new Date(u.created_at).toLocaleDateString()}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const renderGenerator = () => (
-    <Card className="border-border bg-card">
-      <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
-        <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-          <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-          Full Analysis Generator (Admin)
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6 space-y-4">
-        <p className="text-[10px] sm:text-xs text-muted-foreground">
-          Single API call generates complete analysis with all premium insights — executive summary, roadmap, checklist, competitor comparison, and more.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Input value={adminReelUrl} onChange={(e) => setAdminReelUrl(e.target.value)} placeholder="https://www.instagram.com/reel/..." className="bg-muted/50 border-border h-9 sm:h-10 text-xs sm:text-sm flex-1" />
-          <Button onClick={handleAdminGenerateReport} disabled={adminGenerating} className="gradient-primary-bg text-primary-foreground h-9 sm:h-10 text-xs sm:text-sm px-4 sm:px-6 flex-shrink-0">
-            {adminGenerating ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Analyzing...</> : <><Crown className="w-3.5 h-3.5 mr-1.5" /> Analyze Reel</>}
-          </Button>
-        </div>
-        {adminReportData && (
-          <div className="rounded-lg bg-[hsl(var(--viral-high))]/10 border border-[hsl(var(--viral-high))]/30 p-3 sm:p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Crown className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-foreground">Analysis Complete!</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[hsl(var(--viral-high))]/20 text-[hsl(var(--viral-high))] font-medium">
-                Score: {adminReportData.analysis.viralClassification?.score || adminReportData.analysis.viralScore || 0}
-              </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">
-                {Object.keys(adminReportData.premium || {}).length} Premium Sections
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px]">
-              <div className="p-2 rounded bg-muted/30 text-center">
-                <p className="font-bold text-foreground">{adminReportData.analysis.hookAnalysis?.score || 0}/8</p>
-                <p className="text-muted-foreground">Hook</p>
-              </div>
-              <div className="p-2 rounded bg-muted/30 text-center">
-                <p className="font-bold text-foreground">{adminReportData.analysis.captionAnalysis?.score || 0}/8</p>
-                <p className="text-muted-foreground">Caption</p>
-              </div>
-              <div className="p-2 rounded bg-muted/30 text-center">
-                <p className="font-bold text-foreground">{adminReportData.analysis.hashtagAnalysis?.score || 0}/8</p>
-                <p className="text-muted-foreground">Hashtags</p>
-              </div>
-              <div className="p-2 rounded bg-muted/30 text-center">
-                <p className="font-bold text-foreground">{adminReportData.analysis.engagementScore || 0}/8</p>
-                <p className="text-muted-foreground">Engagement</p>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Button onClick={handleAdminDownloadTxt} variant="outline" className="border-border/50 text-foreground h-9 text-xs sm:text-sm">
-                <Download className="w-3.5 h-3.5 mr-1.5" /> Download TXT
-              </Button>
-              <Button onClick={() => setAdminShowPdfPreview(true)} className="gradient-primary-bg text-primary-foreground h-9 text-xs sm:text-sm">
-                <FileText className="w-3.5 h-3.5 mr-1.5" /> View Full Report & PDF
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-
-  const renderSeo = () => (
-    <Card className="border-border bg-card">
-      <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
-        <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-          <Search className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-          SEO Optimizer (Free for Admin)
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6 space-y-4">
-        <p className="text-[10px] sm:text-xs text-muted-foreground">Enter any topic or context to generate deep SEO optimization — titles, hashtags, music, posting time, top viral reels.</p>
-        <textarea value={adminSeoTopic} onChange={(e) => setAdminSeoTopic(e.target.value)} placeholder="Enter reel topic or context... (e.g., 'Morning routine for college students')" className="w-full px-3 py-2 rounded-md bg-muted/50 border border-border text-xs sm:text-sm min-h-[80px] resize-none text-foreground" />
-        <Button onClick={handleAdminSeoGenerate} disabled={adminSeoGenerating || !adminSeoTopic.trim()} className="w-full gradient-primary-bg text-primary-foreground h-9 sm:h-10 text-xs sm:text-sm">
-          {adminSeoGenerating ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Generating SEO Analysis...</> : <><Search className="w-3.5 h-3.5 mr-1.5" /> Generate SEO Analysis</>}
-        </Button>
-        {adminSeoResults && <div className="mt-4"><SEOResultsDisplay data={adminSeoResults} topic={adminSeoTopic} /></div>}
-      </CardContent>
-    </Card>
-  );
-
-  const renderFeedback = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-      <Card className="border-border bg-card">
-        <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-accent flex-shrink-0" />
-            Rating Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <p className="text-3xl sm:text-4xl font-bold text-foreground">{feedbackStats.avg}</p>
-              <div className="flex gap-0.5 justify-center mt-1">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(feedbackStats.avg) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
-                ))}
-              </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">{feedbackStats.total} reviews</p>
-            </div>
-            <div className="flex-1 space-y-1.5">
-              {[5, 4, 3, 2, 1].map((star) => {
-                const count = feedbackStats.distribution[star - 1];
-                const pct = feedbackStats.total ? (count / feedbackStats.total) * 100 : 0;
-                return (
-                  <div key={star} className="flex items-center gap-2 text-[10px] sm:text-xs">
-                    <span className="text-muted-foreground w-3">{star}</span>
-                    <Star className="w-3 h-3 fill-accent text-accent" />
-                    <div className="flex-1 h-2 bg-muted/30 rounded-full overflow-hidden">
-                      <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${pct}%` }} />
-                    </div>
-                    <span className="text-muted-foreground w-5 text-right">{count}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="border-border bg-card">
-        <CardHeader className="px-4 sm:px-6 py-3 sm:py-4">
-          <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-secondary flex-shrink-0" />
-            Recent Feedback
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
-          {recentFeedback.length === 0 ? (
-            <p className="text-xs sm:text-sm text-muted-foreground">No feedback yet</p>
-          ) : (
-            <div className="space-y-2">
-              {recentFeedback.map((f: any, i: number) => (
-                <div key={i} className="p-2 sm:p-2.5 rounded-lg bg-muted/20 space-y-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} className={`w-3 h-3 ${s <= f.rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
-                      ))}
-                    </div>
-                    <span className="text-[9px] sm:text-[10px] text-muted-foreground">{new Date(f.created_at).toLocaleDateString()}</span>
-                  </div>
-                  {f.comment && <p className="text-[10px] sm:text-xs text-muted-foreground">{f.comment}</p>}
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 truncate">{f.reel_url}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-
   const renderActiveSection = () => {
     switch (activeSection) {
-      case "dashboard": return renderDashboard();
-      case "users": return <AdminUserManagement />;
-      case "payments": return <AdminPaymentDashboard />;
-      case "config": return renderConfig();
-      case "api-keys": return <AdminApiKeysManager />;
-      case "ads": return <AdminAdsManager />;
-      case "reports": return renderReports();
-      case "usage": return <AdminAIUsage />;
-      case "traffic": return <AdminTrafficIntelligence />;
-      case "generator": return renderGenerator();
-      case "seo": return renderSeo();
-      case "behaviour": return <AdminBehaviourSettings />;
-      case "feedback": return renderFeedback();
-      case "creators": return <AdminCreatorManagement />;
-      case "profit": return <AdminProfitAnalysis />;
-      default: return renderDashboard();
+      case "dashboard":
+        return renderDashboard();
+      case "users":
+        return <AdminUserManagement />;
+      case "payments":
+        return <AdminPaymentDashboard />;
+      case "config":
+        return renderConfig();
+      case "api-keys":
+        return <AdminApiKeysManager />;
+      default:
+        return renderDashboard();
     }
   };
 
-  const activeItem = SIDEBAR_ITEMS.find(i => i.id === activeSection);
+  const activeItem = SIDEBAR_ITEMS.find((i) => i.id === activeSection);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex flex-col w-56 border-r border-border bg-card/50 backdrop-blur-sm fixed inset-y-0 left-0 z-40">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
@@ -964,7 +550,6 @@ const AdminDashboard = () => {
         </div>
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
@@ -1008,9 +593,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Main Content */}
       <main className="flex-1 lg:ml-56 min-h-screen">
-        {/* Top Bar */}
         <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-lg border-b border-border px-3 sm:px-6 py-2.5 sm:py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -1028,25 +611,8 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        {/* Content Area */}
-        <div className="p-3 sm:p-6 max-w-5xl pb-20 sm:pb-6 overflow-x-hidden">
-          {renderActiveSection()}
-        </div>
+        <div className="p-3 sm:p-6 max-w-5xl pb-20 sm:pb-6 overflow-x-hidden">{renderActiveSection()}</div>
       </main>
-
-      {/* Full Report Preview Modal */}
-      {adminShowPdfPreview && adminReportData && (
-        <div className="fixed inset-0 z-[200] bg-background/95 backdrop-blur-md overflow-y-auto">
-          <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-4">
-            <Button onClick={() => setAdminShowPdfPreview(false)} variant="outline" className="border-border/50 text-foreground">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Admin
-            </Button>
-            <MasterReportPDF analysis={adminReportData.analysis} premiumData={adminReportData.premium} reelUrl={adminReelUrl} />
-          </div>
-        </div>
-      )}
-      {/* AI Chat Assistant */}
-      <AdminAIChat />
     </div>
   );
 };

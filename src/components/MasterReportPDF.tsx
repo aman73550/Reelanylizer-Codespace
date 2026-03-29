@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BannerAd, InlineAd } from "@/components/AdSlots";
 import type { ReelAnalysis } from "@/lib/types";
 import { Download, FileText, Crown, BarChart3, Calendar, Target, Lightbulb, TrendingUp, CheckCircle, Star, Zap, ArrowUp, ArrowDown, Minus, AlertTriangle, Clock, Eye, Music, Hash, Video, Mic, Wand2, Users, MapPin, ShieldCheck, XCircle, BookOpen } from "lucide-react";
 
@@ -433,8 +432,6 @@ const MasterReportPDF = ({ analysis, premiumData, reelUrl }: Props) => {
         </Card>
       )}
 
-      <InlineAd slot="report-after-category" />
-
       {/* Reel Age Decay */}
       {premiumData.reelAgeFactor && (
         <Card className="glass p-5 space-y-3">
@@ -549,8 +546,6 @@ const MasterReportPDF = ({ analysis, premiumData, reelUrl }: Props) => {
           )}
         </Card>
       )}
-
-      <InlineAd slot="report-after-famous" />
 
       {/* Thumbnail & Hook */}
       {premiumData.thumbnailHookAnalysis && (
@@ -680,8 +675,6 @@ const MasterReportPDF = ({ analysis, premiumData, reelUrl }: Props) => {
         </Card>
       )}
 
-      <InlineAd slot="report-mid-1" />
-
       {/* Quick Tips */}
       {premiumData.quickTips && (
         <Card className="glass p-5 space-y-3">
@@ -763,8 +756,6 @@ const MasterReportPDF = ({ analysis, premiumData, reelUrl }: Props) => {
           </div>
         </Card>
       )}
-
-      <InlineAd slot="report-mid-2" />
 
       {/* AI Recommendations */}
       {premiumData.aiRecommendations && (
@@ -850,8 +841,6 @@ const MasterReportPDF = ({ analysis, premiumData, reelUrl }: Props) => {
           </div>
         </Card>
       )}
-
-      <BannerAd slot="report-bottom" />
 
       {/* ===== HIDDEN PDF RENDER ===== */}
       <div ref={reportRef} style={{ display: "none" }}>

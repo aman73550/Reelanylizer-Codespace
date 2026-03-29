@@ -242,35 +242,6 @@ const PAGES: Record<string, ToolPageConfig> = {
       { heading: "Which Engagement Metrics Matter Most?", text: "Not all engagement is equal. Instagram's algorithm weights different metrics: Saves > Shares > Comments > Likes. A reel with 100 saves and 50 shares will outperform one with 1,000 likes and zero saves. Our calculator breaks down each metric so you understand exactly which types of engagement to optimize for." },
     ],
   },
-  "youtube-shorts-analyzer": {
-    slug: "/youtube-shorts-analyzer",
-    title: "YouTube Shorts Analyzer",
-    metaTitle: "Free YouTube Shorts Analyzer – Analyze Shorts Viral Potential | 2026",
-    metaDesc: "Free YouTube Shorts analyzer tool. Analyze your Short's viral potential, hook strength, retention prediction, YouTube policy compliance & monetization readiness. 3 free credits.",
-    keywords: "youtube shorts analyzer, youtube shorts analysis tool, analyze youtube shorts, shorts viral checker, youtube shorts checker, shorts analyzer free",
-    h1: "Free YouTube Shorts Analyzer — Check Viral Potential & Policy Compliance",
-    subtitle: "Paste your YouTube Shorts URL and get instant analysis — viral score, hook strength, retention prediction, YouTube policy check & monetization tips. 3 free credits on signup.",
-    ctaText: "Analyze Your YouTube Short",
-    ctaRoute: "/",
-    icon: TrendingUp,
-    features: [
-      { icon: Target, title: "Viral Score Prediction", desc: "Get a 0-100 viral score based on hook quality, retention signals, and YouTube Shorts algorithm patterns." },
-      { icon: Zap, title: "Hook & Retention Analysis", desc: "Analyzes your first 2-3 seconds for scroll-stopping power. Checks if retention will hold till the end." },
-      { icon: Search, title: "YouTube Policy Compliance", desc: "Checks for community guideline violations, copyright risks, and monetization eligibility before you post." },
-      { icon: BarChart3, title: "Monetization Readiness", desc: "Tells you if your Short meets YouTube's monetization requirements and how to maximize ad revenue." },
-    ],
-    howItWorks: [
-      { step: "Paste YouTube Shorts URL", desc: "Copy your YouTube Shorts link (youtube.com/shorts/...) and paste it into the analyzer." },
-      { step: "AI Analysis Runs", desc: "Our system analyzes hook, content quality, policy compliance, and compares against viral Shorts patterns." },
-      { step: "Get Detailed Report", desc: "Receive viral score, policy check, monetization tips, and specific improvement recommendations." },
-    ],
-    contentBlocks: [
-      { heading: "Why You Need a YouTube Shorts Analyzer", text: "YouTube Shorts algorithm is ruthless — if your first 2 seconds dont grab attention, your Short gets buried. Unlike Instagram Reels, YouTube also has strict content policies that can affect monetization. A Shorts analyzer checks both creative quality AND policy compliance before you post, so you dont waste time on content that wont perform or might get demonetized." },
-      { heading: "How YouTube Shorts Analysis Improves Your Growth", text: "Creators who analyze their Shorts before posting see 2-4x better performance on average. By identifying weak hooks, missing CTAs, and potential policy issues upfront, you can fix problems before they cost you views. Our analyzer also checks your content against YouTube's latest monetization guidelines — so you know if your Short will actually earn money or just get views." },
-      { heading: "YouTube Shorts vs Instagram Reels Analysis", text: "While both platforms use short-form video, the algorithms are very different. YouTube prioritizes retention rate and replay rate, while Instagram focuses more on engagement signals like saves and shares. Our tool adjusts its analysis based on the platform — giving you YouTube-specific insights when you paste a Shorts URL, including policy compliance checks that are unique to YouTube." },
-      { heading: "YouTube Shorts Policy & Monetization Check", text: "One of the biggest advantages of our analyzer is the built-in YouTube policy compliance check. It scans your content for potential community guideline violations, copyright risks (especially music), age-restriction triggers, and advertiser-friendliness. This helps you avoid nasty surprises like demonetization or content removal after posting." },
-    ],
-  },
 };
 
 interface SEOToolPageProps {

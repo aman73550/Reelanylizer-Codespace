@@ -10,6 +10,7 @@ import logoImg from "@/assets/logo.webp";
 
 const NAV_LINKS = [
   { path: "/", label: "Analyzer" },
+  { path: "/youtube-analyzer", label: "YouTube Analyzer" },
   { path: "/seo-optimizer", label: "SEO Optimizer" },
   { path: "/pricing", label: "Pricing" },
   { path: "/blog", label: "Blog" },

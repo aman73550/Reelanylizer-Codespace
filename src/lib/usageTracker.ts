@@ -42,7 +42,9 @@ function getUsageData(): UsageData {
       const fp = generateFingerprint();
       if (data.fingerprint === fp) return data;
     }
-  } catch {}
+  } catch {
+    // Corrupt/unavailable storage: reset usage data
+  }
 
   // Initialize fresh
   const data: UsageData = {
@@ -61,7 +63,9 @@ function saveUsageData(data: UsageData): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     // Also store in cookie as backup
     document.cookie = `${STORAGE_KEY}=${encodeURIComponent(JSON.stringify(data))}; max-age=31536000; path=/; SameSite=Strict`;
-  } catch {}
+  } catch {
+    // Storage write can fail in private mode; cookie backup still attempted
+  }
 }
 
 // Try to restore from cookie if localStorage was cleared
@@ -75,7 +79,9 @@ function restoreFromCookie(): UsageData | null {
         return data;
       }
     }
-  } catch {}
+  } catch {
+    // Cookie may be unavailable; safely ignore and continue
+  }
   return null;
 }
 

@@ -20,10 +20,6 @@ interface Article {
 
 // Original blog articles
 const BLOG_ARTICLES: Article[] = [
-  { slug: "youtube-shorts-viral-tips", title: "YouTube Shorts Viral Tips — What Actually Works in 2026", excerpt: "Real tips to make ur YouTube Shorts go viral. Hooks, retention, posting schedule — stuff that actually works not just theory.", readTime: "7 min read", date: "March 2026", type: "blog", path: "/blog/youtube-shorts-viral-tips" },
-  { slug: "youtube-shorts-vs-instagram-reels", title: "YouTube Shorts vs Instagram Reels — Honest Comparison", excerpt: "Which platform is better for growth and money? Honest breakdown from analyzing thousands of videos on both.", readTime: "8 min read", date: "March 2026", type: "blog", path: "/blog/youtube-shorts-vs-instagram-reels" },
-  { slug: "youtube-shorts-algorithm-explained", title: "YouTube Shorts Algorithm Explained — How It Actually Works", excerpt: "Complete breakdown of how YouTube decides which shorts to push. Retention, replays, and the signals that matter.", readTime: "9 min read", date: "March 2026", type: "blog", path: "/blog/youtube-shorts-algorithm-explained" },
-  { slug: "youtube-shorts-monetization-guide", title: "YouTube Shorts Monetization — Complete Earning Guide 2026", excerpt: "How to actually make money from YouTube Shorts. Eligibility, revenue sharing, and tips to maximize ur earnings.", readTime: "8 min read", date: "March 2026", type: "blog", path: "/blog/youtube-shorts-monetization-guide" },
   { slug: "best-reel-hooks-that-go-viral", title: "Best Reel Hooks That Go Viral in 2025", excerpt: "Discover the top hook formulas that successful creators use to stop the scroll and keep viewers watching.", readTime: "6 min read", date: "March 2025", type: "blog", path: "/blog/best-reel-hooks-that-go-viral" },
   { slug: "how-to-analyze-instagram-reels", title: "How to Analyze Instagram Reels for Virality", excerpt: "A complete guide to analyzing your Instagram reels. Learn which metrics matter and how to use analysis tools.", readTime: "8 min read", date: "March 2025", type: "blog", path: "/blog/how-to-analyze-instagram-reels" },
   { slug: "best-hashtags-for-instagram-reels", title: "Best Hashtags for Instagram Reels — Complete Strategy Guide", excerpt: "The definitive guide to Instagram reel hashtags. How many to use, which competition levels to target.", readTime: "7 min read", date: "March 2025", type: "blog", path: "/blog/best-hashtags-for-instagram-reels" },
@@ -47,10 +43,10 @@ const ALL_ARTICLES = [...BLOG_ARTICLES, ...GUIDE_ARTICLES];
 const BlogIndex = () => (
   <div className="min-h-screen relative overflow-x-hidden pb-20 md:pb-0" style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #F8F7FF 30%, #F0EDFF 60%, #F5F3FF 80%, #FFFFFF 100%)" }}>
     <SEOHead
-      title="Blog & Guides — Instagram Reels & YouTube Shorts Growth Tips | ReelAnalyzer"
-      description="Expert guides on Instagram Reels & YouTube Shorts growth, viral strategies, algorithm tips, monetization, and creator growth strategies. 30+ articles."
+      title="Blog & Guides – Instagram Reels & YouTube Shorts Growth Strategies | ReelAnalyzer"
+      description="Expert blog posts on Instagram Reels and YouTube Shorts growth. Learn viral strategies, algorithm hacks, SEO optimization, engagement tips, monetization guide, and creator growth tactics."
       canonical="https://reelsanylizer.in/blog"
-      keywords="instagram reel tips, youtube shorts tips, reel growth guide, shorts viral strategy, how to go viral, reel seo guide, shorts algorithm 2026"
+      keywords="instagram reel tips, youtube shorts tips, reel growth guide, viral content strategy, instagram algorithm guide, shorts algorithm 2026, reel monetization, viral reels, content creator tips, reel seo guide, engagement growth tactics, algorithm hacks, creator growth strategies, short form video optimization"
     />
 
     <div className="max-w-2xl mx-auto px-4 pt-10 sm:pt-14 pb-6">
@@ -58,8 +54,8 @@ const BlogIndex = () => (
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-muted/50 text-xs text-muted-foreground mb-4">
           <BookOpen className="w-3 h-3" /> {ALL_ARTICLES.length}+ Articles & Guides
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Reels & Shorts Growth Hub</h1>
-        <p className="text-sm text-muted-foreground">Expert strategies for Instagram Reels & YouTube Shorts — viral tips, algorithm hacks, and growth guides.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Instagram Reels Growth Hub</h1>
+        <p className="text-sm text-muted-foreground">Expert strategies for Instagram Reels — viral tips, algorithm hacks, and growth guides.</p>
       </motion.div>
 
       {/* Featured guides */}

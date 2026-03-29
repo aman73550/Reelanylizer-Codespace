@@ -124,7 +124,9 @@ function getOrCreateSession(): SessionData {
       dbRowCreated = true; // assume already saved
       return currentSession!;
     }
-  } catch {}
+  } catch {
+    // sessionStorage can fail in restricted contexts; create fresh session below
+  }
 
   currentSession = {
     sessionId: generateSessionId(),

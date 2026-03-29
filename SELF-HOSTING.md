@@ -48,9 +48,6 @@
    npx supabase functions deploy verify-payment
    npx supabase functions deploy check-reel-date
    npx supabase functions deploy create-admin
-   npx supabase functions deploy usage-analyzer
-   npx supabase functions deploy admin-ai-chat
-   npx supabase functions deploy traffic-analytics
    ```
 
 7. **Create Admin User**
@@ -107,7 +104,6 @@
 **To switch AI provider**, edit these files:
 1. `supabase/functions/analyze-reel/index.ts`
 2. `supabase/functions/generate-master-report/index.ts`
-3. `supabase/functions/admin-ai-chat/index.ts`
 
 Find and replace:
 ```

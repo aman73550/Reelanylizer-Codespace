@@ -7,7 +7,12 @@ import { ArrowLeft, Zap, Target, Users } from "lucide-react";
 
 const AboutPage = () => (
   <div className="page-surface min-h-screen text-foreground">
-    <SEOHead title="About Us – Reel Analyzer" description="Learn about Reel Analyzer, the Instagram Reel analysis tool that helps creators go viral." canonical="https://reelsanylizer.in/about" />
+    <SEOHead 
+      title="About ReelAnalyzer – Instagram Reel & YouTube Shorts Analysis Tool for Creators" 
+      description="Learn about ReelAnalyzer, the AI-powered reel and YouTube Shorts analyzer helping creators understand viral content, algorithm optimization, and growth strategies." 
+      keywords="about reel analyzer, instagram reel tool, youtube shorts tool, creator analysis platform, viral content analysis, reel optimization service, instagram growth tool"
+      canonical="https://reelsanylizer.in/about" 
+    />
 
     <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
       <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary mb-6">

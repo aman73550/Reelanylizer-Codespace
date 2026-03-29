@@ -222,7 +222,7 @@ function extractDataFromMarkdown(markdown: string): {
 
   // --- Extract caption ---
   // Pattern 1: "on Instagram: "caption""
-  const captionMatch1 = text.match(/on Instagram:\s*["""]?([\s\S]*?)(?:["""]?\s*$|#\w)/im);
+  const captionMatch1 = text.match(/on Instagram:\s*["']?([\s\S]*?)(?:["']?\s*$|#\w)/im);
   if (captionMatch1) {
     result.caption = captionMatch1[1].replace(/#[\w]+/g, "").trim();
   }
@@ -317,7 +317,7 @@ function computeHeuristics(caption: string, hashtags: string, markdown: string):
   else if (/\d+%|\d+x|\d+ out of|\d+ million/i.test(caption.substring(0, 80))) hookStyleHint = "statistic";
 
   // Text hook presence
-  const textHookInCaption = /^[A-Z🔥⚡💥😱🤯❗️].{5,60}[.!?…]/.test(caption.trim());
+  const textHookInCaption = /^(?:[A-Z]|\p{Extended_Pictographic}).{5,60}[.!?…]/u.test(caption.trim());
 
   // Topic popularity estimation
   const trendingKeywords = ["trend", "viral", "challenge", "grwm", "transformation", "recipe", "hack", "diy", "motivation", "gym", "fitness", "dance", "fashion", "festival", "wedding", "cricket", "ipl", "bollywood"];
@@ -478,6 +478,91 @@ async function scrapeReelWithFirecrawl(url: string, firecrawlKey?: string): Prom
     };
   } catch (e) {
     console.error("Firecrawl scrape error:", e);
+    return null;
+  }
+}
+
+function normalizeVideoUrl(raw: string): string {
+  return raw.trim().replace(/\\u0026/g, "&").replace(/\\/g, "");
+}
+
+function looksLikeHttpUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
+async function isValidVideoStreamUrl(videoUrl: string): Promise<boolean> {
+  if (!looksLikeHttpUrl(videoUrl)) return false;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    // HEAD is fast and avoids downloading entire media where supported.
+    const headResp = await fetch(videoUrl, {
+      method: "HEAD",
+      signal: controller.signal,
+      redirect: "follow",
+      headers: { "User-Agent": "Mozilla/5.0" },
+    });
+
+    const type = (headResp.headers.get("content-type") || "").toLowerCase();
+    if (headResp.ok && type.includes("video/")) {
+      return true;
+    }
+
+    // Some hosts block HEAD; partial GET is a practical fallback.
+    const rangeResp = await fetch(videoUrl, {
+      method: "GET",
+      signal: controller.signal,
+      redirect: "follow",
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Range": "bytes=0-2048",
+      },
+    });
+
+    const rangeType = (rangeResp.headers.get("content-type") || "").toLowerCase();
+    if (rangeResp.ok && rangeType.includes("video/")) {
+      return true;
+    }
+
+    return /\.mp4(\?|$)/i.test(videoUrl) && rangeResp.ok;
+  } catch (e) {
+    console.warn("Video URL validation failed:", e);
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchProviderVideoUrl(sourceUrl: string, providerApiUrl: string, providerApiKey?: string): Promise<string | null> {
+  try {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "User-Agent": "Mozilla/5.0",
+    };
+    if (providerApiKey) {
+      headers.Authorization = `Bearer ${providerApiKey}`;
+      headers["x-api-key"] = providerApiKey;
+    }
+
+    const postResp = await fetch(providerApiUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ url: sourceUrl }),
+    });
+
+    if (!postResp.ok) {
+      console.warn("Provider API POST failed:", postResp.status);
+      return null;
+    }
+
+    const data = await postResp.json();
+    const candidate = data?.videoUrl || data?.video_url || data?.mp4 || data?.url || data?.data?.videoUrl || data?.data?.url || data?.result?.videoUrl;
+    if (typeof candidate !== "string") return null;
+    return normalizeVideoUrl(candidate);
+  } catch (e) {
+    console.warn("Provider API fetch error:", e);
     return null;
   }
 }
@@ -793,7 +878,16 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { url, lang = "en", caption: userCaption, hashtags: userHashtags, metrics: userMetrics, sampleComments: userComments } = body;
+    const {
+      url,
+      lang = "en",
+      caption: userCaption,
+      hashtags: userHashtags,
+      metrics: userMetrics,
+      sampleComments: userComments,
+      uploadedVideoUrl,
+      uploadedFileUrl,
+    } = body;
     const respondInHindi = lang === "hi";
 
     // === INPUT VALIDATION ===
@@ -832,6 +926,13 @@ serve(async (req) => {
     }
     if (userComments && (typeof userComments !== "string" || userComments.length > 5000)) {
       return new Response(JSON.stringify({ success: false, error: "Sample comments too long (max 5000 chars)" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userUploadedVideoUrl = typeof uploadedVideoUrl === "string" && uploadedVideoUrl.length <= 2000 ? uploadedVideoUrl.trim() : "";
+    const userUploadedFileUrl = typeof uploadedFileUrl === "string" && uploadedFileUrl.length <= 2000 ? uploadedFileUrl.trim() : "";
+    if ((userUploadedVideoUrl && !looksLikeHttpUrl(userUploadedVideoUrl)) || (userUploadedFileUrl && !looksLikeHttpUrl(userUploadedFileUrl))) {
+      return new Response(JSON.stringify({ success: false, error: "Invalid uploaded file URL" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -1036,7 +1137,9 @@ serve(async (req) => {
           const fcKeys = fcData.config_value.split(",").map((k: string) => k.trim()).filter(Boolean);
           if (fcKeys.length > 0) FIRECRAWL_API_KEY = fcKeys[0]; // Use first available key
         }
-      } catch {}
+      } catch (e) {
+        console.warn("Firecrawl API key load from DB failed, using env fallback", e);
+      }
     }
 
     // ==============================
@@ -1059,15 +1162,61 @@ serve(async (req) => {
     let sampleComments = userComments || "";
     let authorName = "";
     let thumbnailUrl = "";
-    let screenshotUrls: string[] = [];
+    const screenshotUrls: string[] = [];
     let screenshotUrl = "";
     let postDate: string | null = null;
     let extractedVideoUrl = "";
+    let videoSource: "metadata" | "provider_api" | "uploaded_file" | "none" = "none";
 
     // Extract video URL from meta result
     if (metaResult?.videoUrl) {
-      extractedVideoUrl = metaResult.videoUrl;
-      console.log("Found video URL from meta tags:", extractedVideoUrl.substring(0, 80) + "...");
+      extractedVideoUrl = normalizeVideoUrl(metaResult.videoUrl);
+      console.log("Found metadata video URL candidate:", extractedVideoUrl.substring(0, 80) + "...");
+    }
+
+    // STRICT ORDER:
+    // 1) metadata video URL
+    // 2) provider API resolved URL
+    // 3) user uploaded file URL
+    // 4) screenshot/frame fallback
+    if (extractedVideoUrl) {
+      const metadataValid = await isValidVideoStreamUrl(extractedVideoUrl);
+      if (metadataValid) {
+        videoSource = "metadata";
+      } else {
+        console.log("Metadata video URL is invalid/unreachable, trying provider API fallback...");
+        extractedVideoUrl = "";
+      }
+    }
+
+    if (!extractedVideoUrl) {
+      const providerApiUrl = Deno.env.get("VIDEO_PROVIDER_API_URL") || "";
+      const providerApiKey = Deno.env.get("VIDEO_PROVIDER_API_KEY") || "";
+      if (providerApiUrl) {
+        const providerCandidate = await fetchProviderVideoUrl(trimmedUrl, providerApiUrl, providerApiKey || undefined);
+        if (providerCandidate && await isValidVideoStreamUrl(providerCandidate)) {
+          extractedVideoUrl = providerCandidate;
+          videoSource = "provider_api";
+          console.log("Using provider API video URL");
+        } else {
+          console.log("Provider API fallback did not return a valid video URL");
+        }
+      } else {
+        console.log("VIDEO_PROVIDER_API_URL not configured, skipping provider API fallback");
+      }
+    }
+
+    if (!extractedVideoUrl) {
+      const uploadedCandidate = userUploadedVideoUrl || userUploadedFileUrl;
+      if (uploadedCandidate && await isValidVideoStreamUrl(uploadedCandidate)) {
+        extractedVideoUrl = normalizeVideoUrl(uploadedCandidate);
+        videoSource = "uploaded_file";
+        console.log("Using user uploaded video URL fallback");
+      }
+    }
+
+    if (!extractedVideoUrl) {
+      console.log("No valid direct video URL found; screenshot/frame fallback will be used");
     }
 
     const userProvidedMetrics = userMetrics && Object.values(userMetrics).some((v: any) => v !== undefined && v !== null);
@@ -1576,6 +1725,7 @@ ${langInstruction}
 
     // Mark analysis method
     analysis._analysisMethod = usedVideoAnalysis ? "native_video" : (imagesForVision.length > 0 ? "screenshot" : "text_only");
+    analysis._videoUrlSource = videoSource;
 
     if (isYouTubeShorts && !analysis.premiumInsights?.youtubePolicyCheck) {
       analysis.premiumInsights = {

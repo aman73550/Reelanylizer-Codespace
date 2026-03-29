@@ -6,7 +6,12 @@ import { ArrowLeft } from "lucide-react";
 
 const PrivacyPolicyPage = () => (
   <div className="page-surface min-h-screen text-foreground">
-    <SEOHead title="Privacy Policy – Reel Analyzer" description="Read Reel Analyzer's privacy policy to understand how we collect, use, and protect your data." canonical="https://reelsanylizer.in/privacy-policy" />
+    <SEOHead 
+      title="Privacy Policy – ReelAnalyzer Data Protection & User Privacy"
+      description="Read ReelAnalyzer's comprehensive privacy policy. Learn how we collect, use, protect, and manage your personal data and content information."
+      keywords="privacy policy, data protection, user privacy, data collection, privacy statement, gdpr compliance, data security, user rights"
+      canonical="https://reelsanylizer.in/privacy-policy" 
+    />
 
     <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
       <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary mb-6">

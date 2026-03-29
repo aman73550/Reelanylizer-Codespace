@@ -12,7 +12,12 @@ const ContactPage = () => {
 
   return (
     <div className="page-surface min-h-screen text-foreground">
-      <SEOHead title="Contact Us – Reel Analyzer" description="Get in touch with the Reel Analyzer team for support, feedback, or business inquiries via WhatsApp." canonical="https://reelsanylizer.in/contact" />
+      <SEOHead 
+        title="Contact Us – ReelAnalyzer Support & Business Inquiries"
+        description="Contact the ReelAnalyzer team for support, feedback, partnership inquiries, or business collaboration. Quick responses via WhatsApp and email."
+        keywords="contact reel analyzer, support, customer service, business inquiry, partnership, feedback, whatsapp support, creator tools support"
+        canonical="https://reelsanylizer.in/contact" 
+      />
 
       <div className="max-w-xl mx-auto px-4 py-8 sm:py-12">
         <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary mb-6">

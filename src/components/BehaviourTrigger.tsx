@@ -108,8 +108,10 @@ export function useBehaviourSettings() {
         .maybeSingle();
       if (data) {
         try {
-          setSettings(JSON.parse((data as any).config_value));
-        } catch {}
+          setSettings(JSON.parse((data as { config_value: string }).config_value));
+        } catch (e) {
+          console.warn("Invalid behaviour settings JSON, using defaults", e);
+        }
       }
     };
     load();

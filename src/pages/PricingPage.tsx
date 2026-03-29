@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 
 const DEFAULT_PLANS = [
   {
@@ -197,7 +198,14 @@ const PricingPage = () => {
   };
 
   return (
-    <div className="page-surface min-h-screen">
+    <>
+      <SEOHead 
+        title="Pricing Plans – Credit Packs for Reel & YouTube Shorts Analysis | ReelAnalyzer"
+        description="Affordable credit packs for Instagram Reel and YouTube Shorts analysis. Unlock full reports, SEO optimization & viral strategies. Pay once, use anytime."
+        keywords="reel analyzer pricing, analysis credits, instagram reel credits, youtube shorts credits, affordable analysis tool, reel analysis plans, viral content analysis, creator tools pricing"
+        canonical="https://reelsanylizer.in/pricing"
+      />
+      <div className="page-surface min-h-screen">
       {/* Hero */}
       <section className="pt-16 sm:pt-24 pb-8 sm:pb-12 text-center px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -381,7 +389,8 @@ const PricingPage = () => {
       </section>
 
       <Footer />
-    </div>
+      </div>
+    </>
   );
 };
 

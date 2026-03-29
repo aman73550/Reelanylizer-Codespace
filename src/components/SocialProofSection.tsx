@@ -96,7 +96,9 @@ function getTodayCount(): number {
     localStorage.setItem(TODAY_DATE_KEY, today);
     localStorage.setItem(TODAY_COUNTER_KEY, String(base));
     return base;
-  } catch {}
+  } catch {
+    // localStorage may be unavailable; keep default value
+  }
   return 320;
 }
 
@@ -115,7 +117,9 @@ function tickTodayCounter(): number {
     const next = current + bump;
     localStorage.setItem(TODAY_COUNTER_KEY, String(next));
     return next;
-  } catch {}
+  } catch {
+    // localStorage may be unavailable; keep default value
+  }
   return 320;
 }
 

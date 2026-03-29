@@ -17,6 +17,7 @@ const SITEMAP_SECTIONS = [
     links: [
       { path: "/reel-analyzer", label: "Reel Analyzer" },
       { path: "/instagram-reel-analyzer", label: "Instagram Reel Analyzer" },
+      { path: "/youtube-analyzer", label: "YouTube Analyzer" },
       { path: "/reel-seo-optimizer", label: "Reel SEO Optimizer" },
       { path: "/reel-hashtag-generator", label: "Reel Hashtag Generator" },
       { path: "/reel-caption-generator", label: "Reel Caption Generator" },

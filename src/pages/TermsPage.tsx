@@ -6,7 +6,12 @@ import { ArrowLeft } from "lucide-react";
 
 const TermsPage = () => (
   <div className="page-surface min-h-screen text-foreground">
-    <SEOHead title="Terms & Conditions – Reel Analyzer" description="Read the terms and conditions for using Reel Analyzer's Instagram Reel analysis services." canonical="https://reelsanylizer.in/terms" />
+    <SEOHead 
+      title="Terms & Conditions – ReelAnalyzer Usage Agreement"
+      description="Read ReelAnalyzer's complete terms and conditions. Understand user rights, responsibilities, content policies, and service usage guidelines."
+      keywords="terms and conditions, user agreement, service terms, usage policy, content policy, terms of service"
+      canonical="https://reelsanylizer.in/terms" 
+    />
 
     <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
       <Link to="/" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary mb-6">

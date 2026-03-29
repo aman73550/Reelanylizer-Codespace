@@ -37,7 +37,7 @@ src/
 ├── pages/               # Route pages (see All Pages below)
 ├── index.css            # Design tokens & global styles
 supabase/
-├── functions/           # Edge functions (analyze-reel, seo-analyze, traffic-analytics, etc.)
+├── functions/           # Edge functions (analyze-reel, seo-analyze, payments, admin setup, etc.)
 ├── migrations/          # Database migrations
 ├── config.toml          # Supabase configuration
 ```

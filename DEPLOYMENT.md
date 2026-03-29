@@ -49,9 +49,6 @@ npx supabase functions deploy create-payment
 npx supabase functions deploy verify-payment
 npx supabase functions deploy check-reel-date
 npx supabase functions deploy create-admin
-npx supabase functions deploy usage-analyzer
-npx supabase functions deploy admin-ai-chat
-npx supabase functions deploy traffic-analytics
 
 # 6. Create admin user
 curl -X POST https://<project-id>.supabase.co/functions/v1/create-admin \
@@ -406,8 +403,6 @@ npx supabase functions logs analyze-reel --follow
 npx supabase functions logs create-payment --follow
 npx supabase functions logs verify-payment --follow
 npx supabase functions logs generate-master-report --follow
-npx supabase functions logs admin-ai-chat --follow
-npx supabase functions logs traffic-analytics --follow
 ```
 
 ### Edge Functions Reference
@@ -421,6 +416,3 @@ npx supabase functions logs traffic-analytics --follow
 | `verify-payment` | Payment verification (signature/session) | — |
 | `check-reel-date` | Reel date validation | — |
 | `create-admin` | Admin user setup | — |
-| `usage-analyzer` | API usage tracking | — |
-| `admin-ai-chat` | AI assistant for admin | — |
-| `traffic-analytics` | Traffic & bot detection | — |

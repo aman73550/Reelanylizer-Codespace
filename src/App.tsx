@@ -7,10 +7,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LangProvider } from "@/lib/LangContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/Header";
-import Index from "./pages/Index.tsx";
-import SEOOptimizer from "./pages/SEOOptimizer.tsx";
 import { Loader2 } from "lucide-react";
 
+const Index = lazy(() => import("./pages/Index.tsx"));
+const YoutubeAnalyzer = lazy(() => import("./pages/YoutubeAnalyzer.tsx"));
+const SEOOptimizer = lazy(() => import("./pages/SEOOptimizer.tsx"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin.tsx"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
@@ -66,6 +67,7 @@ const App = () => (
               <Routes>
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<Index />} />
+                  <Route path="/youtube-analyzer" element={<YoutubeAnalyzer />} />
                   <Route path="/seo-optimizer" element={<SEOOptimizer />} />
 
                   <Route path="/reel-analyzer" element={<SEOToolPage slug="reel-analyzer" />} />
@@ -76,7 +78,6 @@ const App = () => (
                   <Route path="/reel-title-generator" element={<SEOToolPage slug="reel-title-generator" />} />
                   <Route path="/reel-viral-checker" element={<SEOToolPage slug="reel-viral-checker" />} />
                   <Route path="/reel-engagement-calculator" element={<SEOToolPage slug="reel-engagement-calculator" />} />
-                  <Route path="/youtube-shorts-analyzer" element={<SEOToolPage slug="youtube-shorts-analyzer" />} />
 
                   <Route path="/guides/:slug" element={<SEOArticlePage />} />
 

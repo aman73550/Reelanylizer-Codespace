@@ -214,7 +214,9 @@ Generate 10 realistic top_reels and 5 top_youtube_shorts. Scores 0-100. Platform
       await supabase.from("api_usage_logs").insert({
         function_name: "seo-analyze", is_ai_call: true, estimated_cost: 0, status_code: 500, duration_ms: Date.now() - startTime,
       });
-    } catch {}
+    } catch (logError) {
+      console.warn("Failed to log seo-analyze error usage", logError);
+    }
     return new Response(
       JSON.stringify({ success: false, error: error instanceof Error ? error.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BannerAd } from "./AdSlots";
 import FeedbackRating from "./FeedbackRating";
 import {
   Type, FileText, Tag, Hash, Music, Clock, TrendingUp,
@@ -294,8 +293,6 @@ const SEOResultsDisplay = ({ data, topic }: SEOResultsDisplayProps) => {
         <CopyButton text={data.tags?.join(", ") || ""} label="Tags" />
       </SectionCard>
 
-      <BannerAd slot="seo-results-mid" />
-
       {/* Hashtags */}
       <SectionCard icon={Hash} title={lang === "hi" ? "हैशटैग्स (कैटेगरी वाइज़)" : "Hashtags (Categorized)"} delay={0.22}>
         {data.hashtags?.high_volume?.length > 0 && (
@@ -453,8 +450,6 @@ const SEOResultsDisplay = ({ data, topic }: SEOResultsDisplayProps) => {
           )}
         </SectionCard>
       )}
-
-      <BannerAd slot="seo-results-bottom" />
 
       {/* Top 10 Viral Reels */}
       {data.top_reels?.length > 0 && (

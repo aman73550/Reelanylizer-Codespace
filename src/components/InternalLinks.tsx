@@ -6,7 +6,7 @@ import { SEO_ARTICLES } from "@/lib/seoArticles";
 const TOOL_LINKS = [
   { path: "/reel-analyzer", label: "Reel Analyzer", desc: "Analyze reel viral potential" },
   { path: "/instagram-reel-analyzer", label: "Instagram Reel Analyzer", desc: "Full Instagram reel analysis" },
-  { path: "/youtube-shorts-analyzer", label: "YouTube Shorts Analyzer", desc: "Analyze YouTube Shorts viral potential" },
+  { path: "/youtube-analyzer", label: "YouTube Analyzer", desc: "Full YouTube Shorts analysis" },
   { path: "/reel-seo-optimizer", label: "Reel SEO Optimizer", desc: "Optimize reel captions & titles" },
   { path: "/reel-hashtag-generator", label: "Reel Hashtag Generator", desc: "Generate trending hashtags" },
   { path: "/reel-caption-generator", label: "Reel Caption Generator", desc: "Smart caption writing" },
@@ -16,9 +16,6 @@ const TOOL_LINKS = [
 ];
 
 const BLOG_LINKS = [
-  { path: "/blog/youtube-shorts-viral-tips", label: "YouTube Shorts Viral Tips 2026" },
-  { path: "/blog/youtube-shorts-algorithm-explained", label: "YouTube Shorts Algorithm Explained" },
-  { path: "/blog/youtube-shorts-monetization-guide", label: "YouTube Shorts Monetization Guide" },
   { path: "/blog/best-reel-hooks-that-go-viral", label: "Best Reel Hooks That Go Viral" },
   { path: "/blog/how-to-analyze-instagram-reels", label: "How to Analyze Instagram Reels" },
   { path: "/blog/best-hashtags-for-instagram-reels", label: "Best Hashtags for Instagram Reels" },

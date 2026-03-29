@@ -40,19 +40,17 @@ import Footer from "@/components/Footer";
 import TrustBadges from "@/components/TrustBadges";
 
 import AnalysisPaymentPopup from "@/components/AnalysisPaymentPopup";
-import { FeaturesSection, ToolsSection, HowItWorksSection, CTASection } from "@/components/HomeSections";
 import CreditPaywall from "@/components/CreditPaywall";
 import { useCredits } from "@/hooks/useCredits";
 
 import TrustedReviewsCarousel from "@/components/TrustedReviewsCarousel";
-import LiveActivityFeed from "@/components/LiveActivityFeed";
 import LoginPrompt from "@/components/LoginPrompt";
 import { useAuth } from "@/hooks/useAuth";
 import type { ReelAnalysis } from "@/lib/types";
 // History panel moved into Header dropdown
 import CreatorPartnersCarousel from "@/components/CreatorPartnersCarousel";
-import SEOHead from "@/components/SEOHead";
 import { Loader2, Link as LinkIcon, Wand2, TrendingUp, ChevronDown, ChevronUp, ShieldCheck, Crown, LogIn, User } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 
 // === SESSION-LEVEL RESULT CACHE (same URL → same result, no re-analysis) ===
 const analysisCache = new Map<string, { result: ReelAnalysis; timestamp: number }>();
@@ -72,7 +70,7 @@ function setCachedAnalysis(url: string, result: ReelAnalysis) {
 let lastAnalysisTime = 0;
 const COOLDOWN_MS = 60_000;
 
-const Index = () => {
+const YoutubeAnalyzer = () => {
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
   const [hashtags, setHashtags] = useState("");
@@ -204,7 +202,7 @@ const Index = () => {
       console.error("Analysis error:", err);
       const msg = err.name === "AbortError" 
         ? "Analysis timed out after 30 seconds. Please try again." 
-        : (err.message || "Analysis could not be completed right now. Please try a valid Reel or Shorts link again.");
+        : (err.message || "Analysis could not be completed right now. Please try a valid YouTube Shorts link again.");
       toast({ title: t.analysisFailed, description: msg, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -225,10 +223,9 @@ const Index = () => {
     if (loading || analyzeDisabled) return;
     const trimmedUrl = url.trim();
     if (!trimmedUrl) { toast({ title: t.enterUrl, variant: "destructive" }); return; }
-    const igPattern = /^https?:\/\/(www\.)?(instagram\.com|instagr\.am)\/(reel|reels|p)\//i;
     const ytPattern = /^https?:\/\/(www\.)?(m\.)?(youtube\.com\/(shorts\/|watch\?v=)|youtu\.be\/)/i;
-    if (!igPattern.test(trimmedUrl) && !ytPattern.test(trimmedUrl)) { 
-      toast({ title: "Invalid URL", description: "Please enter a valid Instagram Reel or YouTube Shorts URL", variant: "destructive" }); 
+    if (!ytPattern.test(trimmedUrl)) {
+      toast({ title: "Invalid URL", description: "Please enter a valid YouTube Shorts URL", variant: "destructive" });
       return; 
     }
     if (trimmedUrl.length > 500) { toast({ title: "URL too long", variant: "destructive" }); return; }
@@ -328,10 +325,10 @@ const Index = () => {
   return (
     <>
       <SEOHead 
-        title="Free Instagram Reel Analyzer – Viral Score & Algorithm Tips | ReelAnalyzer"
-        description="Analyze your Instagram reels for viral potential, hook strength, engagement metrics & growth tips. Get free analysis with 5 monthly credits. No payment needed."
-        keywords="instagram reel analyzer, reel viral checker, instagram algorithm, reel analysis tool, viral score predictor, reel engagement analyzer, instagram growth tool, content analyzer, reel performance tracker, viral potential checker"
-        canonical="https://reelsanylizer.in"
+        title="Free YouTube Shorts Analyzer – Viral Score & Growth Tips | ReelAnalyzer"
+        description="Analyze YouTube Shorts for viral potential, hook strength, YouTube algorithm compatibility & monetization readiness. Get free analysis with 5 monthly credits."
+        keywords="youtube shorts analyzer, shorts viral checker, youtube algorithm, shorts analysis tool, viral score predictor, youtube monetization check, shorts engagement analyzer, youtube growth tool, shorts performance tracker, youtube policy compliance"
+        canonical="https://reelsanylizer.in/youtube-analyzer"
       />
       <div className="min-h-screen relative overflow-x-hidden">
       
@@ -367,14 +364,14 @@ const Index = () => {
                 className="text-[32px] sm:text-[42px] md:text-[48px] lg:text-[54px] font-extrabold text-foreground mb-5 tracking-[-0.02em] leading-[1.1] text-center lg:text-left"
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               >
-                Free Reel Viral{" "}
+                Free YouTube Shorts{" "}
                 <span className="gradient-primary">Analyzer</span>
               </motion.h1>
               <motion.p 
                 className="text-[16px] sm:text-[17px] text-center lg:text-left mb-10 leading-[1.75] max-w-[480px] mx-auto lg:mx-0 text-muted-foreground"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
               >
-                Paste your Instagram Reel link and get a smart viral potential score with actionable insights. Get 5 free credits every month — no payment needed.
+                Paste your YouTube Shorts link and get a smart viral potential score with actionable insights. Get 5 free credits every month — no payment needed.
               </motion.p>
 
               {/* Input Card */}
@@ -383,7 +380,7 @@ const Index = () => {
                   <div className="relative">
                     <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input 
-                      placeholder={t.urlPlaceholder} 
+                      placeholder="https://www.youtube.com/shorts/..." 
                       value={url} 
                       onChange={(e) => setUrl(e.target.value)} 
                       className="pl-12 border-[#E5E7EB] text-[15px] rounded-xl input-focus-glow" 
@@ -460,7 +457,7 @@ const Index = () => {
             >
               <img 
                 src={heroIllustration} 
-                alt="Reel analysis illustration — magnifying glass with analytics" 
+                alt="YouTube Shorts analysis illustration — magnifying glass analyzing YouTube video metrics and viral potential" 
                 width="480" 
                 height="420" 
                 loading="eager" 
@@ -477,9 +474,6 @@ const Index = () => {
 
       {/* Trust Badges */}
       {!analysis && <TrustBadges />}
-
-      {/* Live Activity Feed */}
-      {!analysis && <LiveActivityFeed />}
 
       {/* Payment Popup */}
       {showPaymentPopup && (
@@ -567,7 +561,7 @@ const Index = () => {
             <FeedbackRating reelUrl={url} />
 
             <div className="flex flex-col items-center gap-3 text-center">
-              <p className="text-sm text-muted-foreground">Want to check another reel? <span className="text-foreground font-medium">Share this tool with a friend.</span></p>
+              <p className="text-sm text-muted-foreground">Want to check another YouTube Shorts? <span className="text-foreground font-medium">Share this tool with a friend.</span></p>
               <ShareToolPopup />
             </div>
           </motion.div>
@@ -577,24 +571,123 @@ const Index = () => {
       {/* Pre-analysis sections */}
       {!analysis && (
         <div className="relative z-10">
-          <FeaturesSection />
-          <ToolsSection />
-          <HowItWorksSection />
-          <TrustedReviewsCarousel />
-          <CTASection onCTAClick={scrollToInput} />
+          {/* YouTube-Specific Features */}
+          <section className="max-w-4xl mx-auto px-4 sm:px-6 py-14 space-y-8">
+            <div className="text-center space-y-3 mb-12">
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Why Analyze Your YouTube Shorts?</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">Get data-driven insights to make your Shorts go viral on YouTube's algorithm</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-5 rounded-xl border border-border bg-card hover:shadow-md transition-shadow">
+                <div className="text-3xl mb-2">🎯</div>
+                <h3 className="font-semibold text-foreground mb-2">Hook Analysis</h3>
+                <p className="text-sm text-muted-foreground">Check if your first 2-3 seconds grab attention on YouTube</p>
+              </div>
+              <div className="p-5 rounded-xl border border-border bg-card hover:shadow-md transition-shadow">
+                <div className="text-3xl mb-2">📝</div>
+                <h3 className="font-semibold text-foreground mb-2">Caption & Metadata</h3>
+                <p className="text-sm text-muted-foreground">Optimize titles and descriptions for YouTube search</p>
+              </div>
+              <div className="p-5 rounded-xl border border-border bg-card hover:shadow-md transition-shadow">
+                <div className="text-3xl mb-2">⚡</div>
+                <h3 className="font-semibold text-foreground mb-2">Viral Prediction</h3>
+                <p className="text-sm text-muted-foreground">Get a 0-100 viral score based on YouTube algorithm patterns</p>
+              </div>
+              <div className="p-5 rounded-xl border border-border bg-card hover:shadow-md transition-shadow">
+                <div className="text-3xl mb-2">✅</div>
+                <h3 className="font-semibold text-foreground mb-2">Policy Check</h3>
+                <p className="text-sm text-muted-foreground">Ensure your Shorts meet YouTube monetization requirements</p>
+              </div>
+            </div>
+          </section>
 
+          {/* How It Works - YouTube Specific */}
+          <section className="max-w-4xl mx-auto px-4 sm:px-6 py-14 space-y-8 border-t border-border">
+            <div className="text-center space-y-3">
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">How to Use YouTube Shorts Analyzer</h2>
+              <p className="text-muted-foreground">3 simple steps to get viral insights</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-lg font-bold text-primary">1</div>
+                <h3 className="font-semibold text-foreground mb-2">Copy Your Shorts URL</h3>
+                <p className="text-sm text-muted-foreground">Paste any YouTube Shorts link (youtube.com/shorts/...)</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-lg font-bold text-primary">2</div>
+                <h3 className="font-semibold text-foreground mb-2">Add Optional Details</h3>
+                <p className="text-sm text-muted-foreground">Include caption, hashtags, or engagement metrics for accuracy</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 text-lg font-bold text-primary">3</div>
+                <h3 className="font-semibold text-foreground mb-2">Get Viral Score</h3>
+                <p className="text-sm text-muted-foreground">Receive detailed analysis with actionable YouTube tips</p>
+              </div>
+            </div>
+          </section>
+
+          {/* YouTube Specific Tips */}
+          <section className="max-w-4xl mx-auto px-4 sm:px-6 py-14 space-y-8 border-t border-border">
+            <div className="text-center space-y-3">
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">YouTube Shorts Growth Tips</h2>
+              <p className="text-muted-foreground">What successful creators know about the algorithm</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">🚀 First 2 Seconds Matter</h3>
+                <p className="text-sm text-muted-foreground">YouTube tracks retention from the very start. Hook viewers immediately or your Shorts won't reach the algorithm's test audience.</p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">🔄 Replay Rate is Gold</h3>
+                <p className="text-sm text-muted-foreground">When viewers watch your Shorts multiple times, YouTube treats it as a strong engagement signal and pushes it to more people.</p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">⏱️ Shorter is Better</h3>
+                <p className="text-sm text-muted-foreground">Keep Shorts between 15-35 seconds for high completion rates. YouTube rewards videos people finish watching.</p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">💰 Monetization Ready?</h3>
+                <p className="text-sm text-muted-foreground">Our analyzer checks if your Shorts meet YouTube Partner Program requirements and community guidelines.</p>
+              </div>
+            </div>
+          </section>
+
+          <TrustedReviewsCarousel />
+
+          {/* CTA Section */}
+          <section className="max-w-2xl mx-auto px-4 sm:px-6 py-14 text-center space-y-4 border-t border-border">
+            <h2 className="text-2xl font-bold text-foreground">Ready to Grow Your YouTube Shorts?</h2>
+            <p className="text-muted-foreground">Get free analysis with 5 monthly credits. No payment required.</p>
+            <Button 
+              onClick={scrollToInput}
+              className="cta-gradient text-white font-semibold rounded-xl border-0"
+              style={{ height: '50px', width: '100%', maxWidth: '300px', margin: '0 auto', display: 'block' }}
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Analyze Your Shorts Now
+            </Button>
+          </section>
+
+          {/* About Section */}
           <section className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-4">
-            <h2 className="text-lg font-bold text-foreground">Instagram Reel Analyzer & SEO Optimization Tool</h2>
+            <h2 className="text-lg font-bold text-foreground">YouTube Shorts Analyzer Tool</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              ReelAnalyzer is a data-driven tool that helps Instagram creators analyze their reel performance, predict viral potential, and optimize content for maximum reach. Sign in, paste any Instagram reel URL, and get instant insights on hook strength, caption quality, hashtag effectiveness, engagement metrics, and trend alignment.
+              ReelAnalyzer is a free YouTube Shorts analyzer tool that helps creators understand what makes videos go viral on YouTube. Get instant analysis on your Shorts' viral potential, hook strength, YouTube algorithm compatibility, and monetization readiness — all in seconds.
             </p>
-            <h3 className="text-base font-semibold text-foreground">How Does Reel Analysis Help Your Growth?</h3>
+            <h3 className="text-base font-semibold text-foreground">How Does YouTube Shorts Analysis Help Creators?</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Creators who analyze their reels before posting see 2-3x better engagement rates. Our reel performance analyzer checks your hook timing, caption SEO, hashtag competition levels, and content classification to identify exactly what's working and what needs improvement.
+              YouTube Shorts creators who analyze their content before posting see 2-3x better performance on average. Our YouTube Shorts analyzer checks hook effectiveness, content length optimization, caption quality, hashtag strategy, and YouTube policy compliance. Get specific, actionable recommendations to improve retention, increase replays, boost engagement signals, and meet YouTube's monetization requirements.
+            </p>
+            <h3 className="text-base font-semibold text-foreground">Why YouTube Shorts Analysis Matters in 2026</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              YouTube is increasingly pushing Shorts as a competitor to TikTok and Instagram Reels. The algorithm is ruthless — if your first 2-3 seconds don't grab attention, your Shorts never leave YouTube's test phase. Our analyzer helps you optimize every aspect before posting, so you don't waste time on content that won't perform or might violate monetization guidelines.
             </p>
           </section>
 
-          <InternalLinks currentPath="/" />
+          <InternalLinks currentPath="/youtube-analyzer" />
 
           <div className="py-8 space-y-4">
             <div className="flex justify-center"><ShareToolPopup /></div>
@@ -609,4 +702,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default YoutubeAnalyzer;
