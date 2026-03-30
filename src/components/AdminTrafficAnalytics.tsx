@@ -33,18 +33,46 @@ export default function AdminTrafficAnalytics() {
   const loadStats = async () => {
     try {
       setLoading(true);
+      
+      // Get session for Authorization header
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        toast.error("Not authenticated. Please log in again.");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("traffic-analytics", {
+        headers: {
+          "Authorization": `Bearer ${session.access_token}`,
+        },
         body: { action: "stats" },
       });
 
       if (error) throw error;
 
-      setStats(data);
+      // Map edge function response to component expectations
+      const statsData = {
+        todayRealUsers: data.stats.today.real || 0,
+        todayBots: data.stats.today.bot || 0,
+        weekRealUsers: data.stats.week.real || 0,
+        weekBots: data.stats.week.bot || 0,
+        sourceBreakdown: data.stats.sourceBreakdown || {},
+        deviceBreakdown: data.stats.deviceBreakdown || {},
+        countryBreakdown: data.stats.countryBreakdown || {},
+        avgSessionDuration: data.stats.engagement.avgDuration || 0,
+        avgScrollDepth: data.stats.engagement.avgScrollDepth || 0,
+        avgClicks: data.stats.engagement.avgClicks || 0,
+        viralSpikes: data.stats.viralSpikes || [],
+        sharePlatforms: data.stats.shares.platformBreakdown || {},
+        shareAttributedSessions: data.stats.shares.attributedSessions || 0,
+      };
+
+      setStats(statsData);
       setRefreshedAt(new Date());
       toast.success("Traffic data refreshed");
     } catch (error: any) {
       console.error("Error:", error);
-      toast.error("Failed to load traffic analytics");
+      toast.error("Failed to load traffic analytics: " + (error.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
