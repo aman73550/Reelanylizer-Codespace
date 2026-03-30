@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Trash2, DollarSign, Lock, Copy, Check, Upload, Link as LinkIcon, X } from "lucide-react";
+import { Plus, Trash2, DollarSign, Lock, Copy, Check, Upload, Link as LinkIcon, X, Edit3, Eye } from "lucide-react";
 
 interface Creator {
   id: string;
@@ -14,6 +14,7 @@ interface Creator {
   platform: string;
   followers: string;
   is_top_partner: boolean;
+  status?: string;
   profile_image?: string;
   tags?: string[];
   monthly_views?: number;
@@ -71,6 +72,8 @@ export default function AdminManageCreators() {
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
   const [profileImageMode, setProfileImageMode] = useState<"upload" | "link">("upload");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editingCreator, setEditingCreator] = useState<Creator | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -183,6 +186,136 @@ export default function AdminManageCreators() {
     setProfileImagePreview(null);
     setFormData({ ...formData, profile_image: "" });
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // ===== CREATOR ACTIONS =====
+
+  const updateCreator = async (creator: Creator) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from("creators")
+        .update({
+          name: creator.name,
+          email: creator.email,
+          platform: creator.platform,
+          username: creator.username,
+          followers: creator.followers,
+          monthly_views: creator.monthly_views,
+          instagram_url: creator.instagram_url,
+          youtube_url: creator.youtube_url,
+          profile_image: creator.profile_image,
+          promo_video_url: creator.promo_video_url,
+          tags: creator.tags,
+          is_top_partner: creator.is_top_partner,
+        })
+        .eq("id", creator.id);
+
+      if (error) throw error;
+      toast.success("Creator updated!");
+      setEditingCreator(null);
+      await loadCreators();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to update creator");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteCreator = async (creatorId: string) => {
+    if (!window.confirm("Delete this creator? This action cannot be undone.")) return;
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.from("creators").delete().eq("id", creatorId);
+      if (error) throw error;
+      toast.success("Creator deleted!");
+      await loadCreators();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to delete creator");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleCreatorStatus = async (creator: Creator) => {
+    try {
+      const newStatus = creator.status === "active" ? "inactive" : "active";
+      const { error } = await supabase
+        .from("creators")
+        .update({ status: newStatus })
+        .eq("id", creator.id);
+
+      if (error) throw error;
+      toast.success(`Creator ${newStatus}!`);
+      await loadCreators();
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to update status");
+    }
+  };
+
+  // ===== CAMPAIGN ACTIONS =====
+
+  const updateCampaign = async (campaign: Campaign) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase
+        .from("campaigns")
+        .update({
+          campaign_name: campaign.campaign_name,
+          start_date: campaign.start_date,
+          end_date: campaign.end_date,
+          revenue_share_percent: campaign.revenue_share_percent,
+          status: campaign.status,
+        })
+        .eq("id", campaign.id);
+
+      if (error) throw error;
+      toast.success("Campaign updated!");
+      setEditingCampaign(null);
+      await loadCampaigns();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to update campaign");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteCampaign = async (campaignId: string) => {
+    if (!window.confirm("Delete this campaign? This action cannot be undone.")) return;
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.from("campaigns").delete().eq("id", campaignId);
+      if (error) throw error;
+      toast.success("Campaign deleted!");
+      await loadCampaigns();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to delete campaign");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateCampaignStatus = async (campaign: Campaign, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("campaigns")
+        .update({ status: newStatus })
+        .eq("id", campaign.id);
+
+      if (error) throw error;
+      toast.success(`Campaign marked as ${newStatus}!`);
+      await loadCampaigns();
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Failed to update campaign status");
+    }
   };
 
   const loadAllData = async () => {
@@ -522,34 +655,141 @@ export default function AdminManageCreators() {
               {creators.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No creators yet</p>
               ) : (
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Name</th>
-                      <th className="text-left py-2">Email</th>
-                      <th className="text-left py-2">Platform</th>
-                      <th className="text-right py-2">Followers</th>
-                      <th className="text-center py-2">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {creators.map((creator) => (
-                      <tr key={creator.id} className="border-b hover:bg-muted/50">
-                        <td className="py-2 font-medium">{creator.name}</td>
-                        <td className="py-2 text-muted-foreground">{creator.email}</td>
-                        <td className="py-2 capitalize">{creator.platform}</td>
-                        <td className="text-right py-2">{Number(creator.followers).toLocaleString()}</td>
-                        <td className="text-center py-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${creator.is_top_partner ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
-                            {creator.is_top_partner ? "Top Partner 🔥" : "Regular"}
-                          </span>
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2">Name</th>
+                        <th className="text-left py-2">Email</th>
+                        <th className="text-left py-2">Platform</th>
+                        <th className="text-right py-2">Followers</th>
+                        <th className="text-center py-2">Status</th>
+                        <th className="text-center py-2">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {creators.map((creator) => (
+                        <tr key={creator.id} className="border-b hover:bg-muted/50">
+                          <td className="py-2 font-medium">{creator.name}</td>
+                          <td className="py-2 text-muted-foreground text-xs">{creator.email}</td>
+                          <td className="py-2 capitalize">{creator.platform}</td>
+                          <td className="text-right py-2">{Number(creator.followers).toLocaleString()}</td>
+                          <td className="text-center py-2">
+                            <div className="flex flex-col items-center gap-1">
+                              <span className={`text-xs px-2 py-1 rounded-full ${creator.is_top_partner ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
+                                {creator.is_top_partner ? "Top Partner 🔥" : "Regular"}
+                              </span>
+                              <span className={`text-xs px-2 py-1 rounded-full ${creator.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                {creator.status === "active" ? "Active ✓" : "Inactive"}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="text-center py-2">
+                            <div className="flex gap-2 justify-center">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => setEditingCreator(creator)}
+                              >
+                                <Edit3 className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => toggleCreatorStatus(creator)}
+                              >
+                                {creator.status === "active" ? "Disable" : "Enable"}
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => deleteCreator(creator.id)}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </CardContent>
+
+            {/* Edit Creator Modal */}
+            {editingCreator && (
+              <CardContent className="border-t border-border bg-muted/20 space-y-4 p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">Edit Creator - {editingCreator.name}</h3>
+                  <button onClick={() => setEditingCreator(null)}>
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Name</Label>
+                    <Input
+                      value={editingCreator.name}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, name: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Email</Label>
+                    <Input
+                      type="email"
+                      value={editingCreator.email}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, email: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Platform</Label>
+                    <select
+                      value={editingCreator.platform}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, platform: e.target.value })}
+                      className="w-full h-8 px-2 rounded-md bg-background border text-foreground text-xs"
+                    >
+                      <option value="instagram">Instagram</option>
+                      <option value="youtube">YouTube</option>
+                      <option value="tiktok">TikTok</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Followers</Label>
+                    <Input
+                      value={editingCreator.followers}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, followers: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <input
+                    type="checkbox"
+                    checked={editingCreator.is_top_partner}
+                    onChange={(e) => setEditingCreator({ ...editingCreator, is_top_partner: e.target.checked })}
+                    className="w-3 h-3"
+                  />
+                  <Label className="text-xs">Top Partner 🔥</Label>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setEditingCreator(null)}>Cancel</Button>
+                  <Button 
+                    size="sm" 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => updateCreator(editingCreator)}
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            )}
           </Card>
         </div>
       )}
@@ -630,32 +870,125 @@ export default function AdminManageCreators() {
               {campaigns.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No campaigns yet</p>
               ) : (
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Campaign Name</th>
-                      <th className="text-left py-2">Creator</th>
-                      <th className="text-left py-2">Dates</th>
-                      <th className="text-center py-2">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {campaigns.map((campaign) => (
-                      <tr key={campaign.id} className="border-b hover:bg-muted/50">
-                        <td className="py-2 font-medium">{campaign.campaign_name}</td>
-                        <td className="py-2">{campaign.creator?.name || "-"}</td>
-                        <td className="py-2 text-sm text-muted-foreground">{campaign.start_date} — {campaign.end_date}</td>
-                        <td className="text-center py-2">
-                          <span className={`text-xs px-2 py-1 rounded-full ${campaign.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
-                            {campaign.status}
-                          </span>
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2">Campaign Name</th>
+                        <th className="text-left py-2">Creator</th>
+                        <th className="text-left py-2">Dates</th>
+                        <th className="text-center py-2">Status</th>
+                        <th className="text-center py-2">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {campaigns.map((campaign) => (
+                        <tr key={campaign.id} className="border-b hover:bg-muted/50">
+                          <td className="py-2 font-medium">{campaign.campaign_name}</td>
+                          <td className="py-2">{campaign.creator?.name || "-"}</td>
+                          <td className="py-2 text-xs text-muted-foreground">{campaign.start_date} — {campaign.end_date}</td>
+                          <td className="text-center py-2">
+                            <select
+                              value={campaign.status}
+                              onChange={(e) => updateCampaignStatus(campaign, e.target.value)}
+                              className={`text-xs px-2 py-1 rounded-full border-0 cursor-pointer font-medium ${
+                                campaign.status === "active" ? "bg-green-100 text-green-800" :
+                                campaign.status === "completed" ? "bg-blue-100 text-blue-800" :
+                                "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              <option value="active">Active</option>
+                              <option value="paused">Paused</option>
+                              <option value="completed">Completed</option>
+                            </select>
+                          </td>
+                          <td className="text-center py-2">
+                            <div className="flex gap-2 justify-center">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => setEditingCampaign(campaign)}
+                              >
+                                <Edit3 className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => deleteCampaign(campaign.id)}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </CardContent>
+
+            {/* Edit Campaign Modal */}
+            {editingCampaign && (
+              <CardContent className="border-t border-border bg-muted/20 space-y-4 p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-semibold">Edit Campaign - {editingCampaign.campaign_name}</h3>
+                  <button onClick={() => setEditingCampaign(null)}>
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Campaign Name</Label>
+                    <Input
+                      value={editingCampaign.campaign_name}
+                      onChange={(e) => setEditingCampaign({ ...editingCampaign, campaign_name: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Revenue Share %</Label>
+                    <Input
+                      type="number"
+                      value={editingCampaign.revenue_share_percent}
+                      onChange={(e) => setEditingCampaign({ ...editingCampaign, revenue_share_percent: Number(e.target.value) })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Start Date</Label>
+                    <Input
+                      type="date"
+                      value={editingCampaign.start_date}
+                      onChange={(e) => setEditingCampaign({ ...editingCampaign, start_date: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">End Date</Label>
+                    <Input
+                      type="date"
+                      value={editingCampaign.end_date}
+                      onChange={(e) => setEditingCampaign({ ...editingCampaign, end_date: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setEditingCampaign(null)}>Cancel</Button>
+                  <Button 
+                    size="sm" 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => updateCampaign(editingCampaign)}
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            )}
           </Card>
         </div>
       )}
