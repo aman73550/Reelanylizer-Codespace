@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Trash2, DollarSign, Lock, Copy, Check, Upload, Link as LinkIcon, X, Edit3, Eye } from "lucide-react";
+import { Plus, Trash2, DollarSign, Lock, Copy, Check, Upload, Link as LinkIcon, X, Edit3, Eye, BarChart3, PieChart } from "lucide-react";
 
 interface Creator {
   id: string;
@@ -56,7 +56,7 @@ interface ActivityLog {
   created_at: string;
 }
 
-type TabType = "creators" | "campaigns" | "payouts" | "activity";
+type TabType = "creators" | "campaigns" | "payouts" | "activity" | "analytics";
 
 export default function AdminManageCreators() {
   const [tab, setTab] = useState<TabType>("creators");
@@ -193,6 +193,14 @@ export default function AdminManageCreators() {
   const updateCreator = async (creator: Creator) => {
     try {
       setLoading(true);
+      
+      // Get old creator data for comparison
+      const { data: oldCreator } = await supabase
+        .from("creators")
+        .select("*")
+        .eq("id", creator.id)
+        .single();
+
       const { error } = await supabase
         .from("creators")
         .update({
@@ -212,9 +220,46 @@ export default function AdminManageCreators() {
         .eq("id", creator.id);
 
       if (error) throw error;
+
+      // Log activity with change details
+      const { data: { session } } = await supabase.auth.getSession();
+      const changes: Record<string, any> = {};
+      if (oldCreator?.name !== creator.name) changes.name = { old: oldCreator?.name, new: creator.name };
+      if (oldCreator?.email !== creator.email) changes.email = { old: oldCreator?.email, new: creator.email };
+      if (oldCreator?.followers !== creator.followers) changes.followers = { old: oldCreator?.followers, new: creator.followers };
+      if (oldCreator?.is_top_partner !== creator.is_top_partner) changes.is_top_partner = { old: oldCreator?.is_top_partner, new: creator.is_top_partner };
+
+      if (Object.keys(changes).length > 0) {
+        await supabase.from("activity_logs").insert({
+          actor_type: "admin",
+          actor_id: session?.user.id,
+          action: "edit",
+          target_type: "creator",
+          target_id: creator.id,
+          details: {
+            old_values: {
+              name: oldCreator?.name,
+              email: oldCreator?.email,
+              platform: oldCreator?.platform,
+              followers: oldCreator?.followers,
+              is_top_partner: oldCreator?.is_top_partner,
+            },
+            new_values: {
+              name: creator.name,
+              email: creator.email,
+              platform: creator.platform,
+              followers: creator.followers,
+              is_top_partner: creator.is_top_partner,
+            },
+            changes: Object.keys(changes),
+          },
+        });
+      }
+
       toast.success("Creator updated!");
       setEditingCreator(null);
       await loadCreators();
+      await loadActivityLogs();
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Failed to update creator");
@@ -228,10 +273,34 @@ export default function AdminManageCreators() {
 
     try {
       setLoading(true);
+
+      // Get creator info before deleting
+      const { data: creatorData } = await supabase
+        .from("creators")
+        .select("*")
+        .eq("id", creatorId)
+        .single();
+
       const { error } = await supabase.from("creators").delete().eq("id", creatorId);
       if (error) throw error;
+
+      // Log activity
+      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.from("activity_logs").insert({
+        actor_type: "admin",
+        actor_id: session?.user.id,
+        action: "delete",
+        target_type: "creator",
+        target_id: creatorId,
+        details: {
+          deleted_name: creatorData?.name,
+          deleted_email: creatorData?.email,
+        },
+      });
+
       toast.success("Creator deleted!");
       await loadCreators();
+      await loadActivityLogs();
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Failed to delete creator");
@@ -249,8 +318,25 @@ export default function AdminManageCreators() {
         .eq("id", creator.id);
 
       if (error) throw error;
+
+      // Log activity
+      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.from("activity_logs").insert({
+        actor_type: "admin",
+        actor_id: session?.user.id,
+        action: "edit",
+        target_type: "creator",
+        target_id: creator.id,
+        details: {
+          old_values: { status: creator.status },
+          new_values: { status: newStatus },
+          changes: ["status"],
+        },
+      });
+
       toast.success(`Creator ${newStatus}!`);
       await loadCreators();
+      await loadActivityLogs();
     } catch (error: any) {
       console.error(error);
       toast.error("Failed to update status");
@@ -402,6 +488,22 @@ export default function AdminManageCreators() {
 
       if (error) throw error;
 
+      // Log activity
+      await supabase.from("activity_logs").insert({
+        actor_type: "admin",
+        actor_id: session.user.id,
+        action: "create",
+        target_type: "creator",
+        target_id: data.creator_id || "unknown",
+        details: {
+          name: formData.name,
+          email: formData.email,
+          platform: formData.platform,
+          followers: formData.followers,
+          is_top_partner: formData.is_top_partner,
+        },
+      });
+
       toast.success("Creator created successfully");
       setFormData({
         name: "", email: "", password: "", platform: "instagram", username: "", followers: "",
@@ -410,6 +512,7 @@ export default function AdminManageCreators() {
       });
       setShowCreateForm(false);
       await loadCreators();
+      await loadActivityLogs();
     } catch (error: any) {
       console.error("Error:", error);
       toast.error(error.message || "Failed to create creator");
@@ -502,7 +605,7 @@ export default function AdminManageCreators() {
       {/* Tabs */}
       <div className="border-b border-border">
         <div className="flex gap-4 px-4 overflow-x-auto">
-          {(["creators", "campaigns", "payouts", "activity"] as TabType[]).map((t) => (
+          {(["creators", "campaigns", "payouts", "activity", "analytics"] as TabType[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -1042,25 +1145,315 @@ export default function AdminManageCreators() {
       {tab === "activity" && (
         <Card className="border-border bg-card">
           <CardHeader>
-            <CardTitle>Activity Logs</CardTitle>
+            <CardTitle>Creator Activity Logs</CardTitle>
           </CardHeader>
 
           <CardContent>
             {activityLogs.length === 0 ? (
               <p className="text-sm text-muted-foreground">No activity yet</p>
             ) : (
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {activityLogs.map((log) => (
-                  <div key={log.id} className="border-l-2 border-primary pl-4 py-2">
-                    <p className="text-sm font-medium">{log.actor_type} — {log.action}</p>
-                    <p className="text-xs text-muted-foreground">{log.target_type}: {log.target_id}</p>
-                    <p className="text-xs text-muted-foreground">{new Date(log.created_at).toLocaleString()}</p>
-                  </div>
-                ))}
+              <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                {activityLogs.filter(log => log.target_type === "creator").map((log) => {
+                  const icons: Record<string, React.ReactNode> = {
+                    'add': <Plus className="w-4 h-4 text-green-500" />,
+                    'create': <Plus className="w-4 h-4 text-green-500" />,
+                    'edit': <Edit3 className="w-4 h-4 text-blue-500" />,
+                    'update': <Edit3 className="w-4 h-4 text-blue-500" />,
+                    'delete': <Trash2 className="w-4 h-4 text-red-500" />,
+                    'disable': <Lock className="w-4 h-4 text-yellow-500" />,
+                  };
+                  
+                  const actionIcon = icons[log.action.toLowerCase()] || <eye className="w-4 h-4" />;
+
+                  return (
+                    <div key={log.id} className="border border-border rounded-lg p-3 hover:bg-muted/50 transition">
+                      <div className="flex items-start gap-3 mb-2">
+                        <div className="mt-1">{actionIcon}</div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start">
+                            <p className="text-sm font-semibold capitalize">{log.action}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(log.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-1">
+                            By: {log.actor_type} • Target: {log.target_type}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Show details of what was changed */}
+                      {log.details && (
+                        <div className="bg-muted/50 rounded p-2 mt-2 text-xs space-y-1">
+                          {log.action.toLowerCase() === 'create' || log.action.toLowerCase() === 'add' ? (
+                            <div>
+                              <p className="font-medium text-foreground">Created:</p>
+                              <ul className="ml-3 space-y-0.5">
+                                {log.details.name && <li>• Name: {log.details.name}</li>}
+                                {log.details.email && <li>• Email: {log.details.email}</li>}
+                                {log.details.platform && <li>• Platform: {log.details.platform}</li>}
+                                {log.details.followers && <li>• Followers: {log.details.followers}</li>}
+                                {log.details.is_top_partner && <li>• Top Partner: Yes 🔥</li>}
+                              </ul>
+                            </div>
+                          ) : log.action.toLowerCase() === 'edit' || log.action.toLowerCase() === 'update' ? (
+                            <div>
+                              <p className="font-medium text-foreground">Updated:</p>
+                              <ul className="ml-3 space-y-0.5">
+                                {log.details.old_values && log.details.new_values ? (
+                                  Object.keys(log.details.new_values).map((key) => {
+                                    const oldVal = log.details.old_values[key];
+                                    const newVal = log.details.new_values[key];
+                                    if (oldVal !== newVal) {
+                                      return (
+                                        <li key={key}>
+                                          • {key}: <span className="line-through text-red-500">{oldVal}</span> → <span className="text-green-500">{newVal}</span>
+                                        </li>
+                                      );
+                                    }
+                                  })
+                                ) : (
+                                  Object.entries(log.details).map(([key, value]: [string, any]) => (
+                                    <li key={key}>• {key}: {String(value)}</li>
+                                  ))
+                                )}
+                              </ul>
+                            </div>
+                          ) : log.action.toLowerCase() === 'delete' ? (
+                            <div>
+                              <p className="font-medium text-red-600">Deleted Creator</p>
+                              <p className="ml-3 text-xs">ID: {log.target_id}</p>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="font-medium text-foreground">Details:</p>
+                              <p className="ml-3 text-xs">{JSON.stringify(log.details)}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* Analytics Tab */}
+      {tab === "analytics" && (
+        <div className="space-y-6">
+          <Card className="border-border bg-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" /> Creator Performance Analytics
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {creators.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No creators yet</p>
+              ) : (
+                <div className="space-y-6">
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Card className="border-border bg-muted">
+                      <CardContent className="pt-4">
+                        <p className="text-xs text-muted-foreground">Total Creators</p>
+                        <p className="text-2xl font-bold mt-1">{creators.length}</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-border bg-muted">
+                      <CardContent className="pt-4">
+                        <p className="text-xs text-muted-foreground">Active Creators</p>
+                        <p className="text-2xl font-bold mt-1">{creators.filter(c => c.status !== "inactive").length}</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-border bg-muted">
+                      <CardContent className="pt-4">
+                        <p className="text-xs text-muted-foreground">Top Partners</p>
+                        <p className="text-2xl font-bold mt-1">{creators.filter(c => c.is_top_partner).length}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Total Followers Distribution */}
+                  <Card className="border-border bg-card">
+                    <CardHeader>
+                      <CardTitle className="text-base">Total Followers Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {(() => {
+                          const totalFollowers = creators.reduce((sum, c) => sum + Number(c.followers), 0);
+                          return creators
+                            .sort((a, b) => Number(b.followers) - Number(a.followers))
+                            .map((creator) => {
+                              const percentage = totalFollowers > 0 
+                                ? Math.round((Number(creator.followers) / totalFollowers) * 100)
+                                : 0;
+                              return (
+                                <div key={creator.id} className="space-y-1">
+                                  <div className="flex justify-between items-center text-xs">
+                                    <span className="font-medium">{creator.name}</span>
+                                    <span className="text-muted-foreground">
+                                      {Number(creator.followers).toLocaleString()} ({percentage}%)
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-muted rounded-full h-2">
+                                    <div
+                                      className="bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full transition-all"
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            });
+                        })()}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Monthly Views Distribution */}
+                  <Card className="border-border bg-card">
+                    <CardHeader>
+                      <CardTitle className="text-base">Monthly Views Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {(() => {
+                          const totalViews = creators.reduce((sum, c) => sum + (c.monthly_views || 0), 0);
+                          return creators
+                            .filter(c => c.monthly_views && c.monthly_views > 0)
+                            .sort((a, b) => (b.monthly_views || 0) - (a.monthly_views || 0))
+                            .map((creator) => {
+                              const percentage = totalViews > 0 
+                                ? Math.round(((creator.monthly_views || 0) / totalViews) * 100)
+                                : 0;
+                              return (
+                                <div key={creator.id} className="space-y-1">
+                                  <div className="flex justify-between items-center text-xs">
+                                    <span className="font-medium">{creator.name}</span>
+                                    <span className="text-muted-foreground">
+                                      {(creator.monthly_views || 0).toLocaleString()} ({percentage}%)
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-muted rounded-full h-2">
+                                    <div
+                                      className="bg-gradient-to-r from-purple-500 to-purple-400 h-2 rounded-full transition-all"
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })
+                            .concat(
+                              creators.filter(c => !c.monthly_views || c.monthly_views === 0).length > 0 ? [
+                                <div key="no-data" className="text-xs text-muted-foreground italic">
+                                  {creators.filter(c => !c.monthly_views || c.monthly_views === 0).length} creators with no monthly views data
+                                </div>
+                              ] : []
+                            );
+                        })()}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Payouts Distribution */}
+                  <Card className="border-border bg-card">
+                    <CardHeader>
+                      <CardTitle className="text-base">Total Payouts Distribution</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {(() => {
+                          const payoutsByCreator: Record<string, number> = {};
+                          creators.forEach(c => payoutsByCreator[c.id] = 0);
+                          payouts.forEach(p => {
+                            if (payoutsByCreator.hasOwnProperty(p.creator_id)) {
+                              payoutsByCreator[p.creator_id] += p.amount;
+                            }
+                          });
+
+                          const totalPayout = Object.values(payoutsByCreator).reduce((a, b) => a + b, 0);
+                          return creators
+                            .sort((a, b) => (payoutsByCreator[b.id] || 0) - (payoutsByCreator[a.id] || 0))
+                            .map((creator) => {
+                              const creatorPayout = payoutsByCreator[creator.id] || 0;
+                              const percentage = totalPayout > 0 
+                                ? Math.round((creatorPayout / totalPayout) * 100)
+                                : 0;
+                              return (
+                                <div key={creator.id} className="space-y-1">
+                                  <div className="flex justify-between items-center text-xs">
+                                    <span className="font-medium">{creator.name}</span>
+                                    <span className="text-green-600 font-semibold">
+                                      ₹{creatorPayout.toLocaleString()} ({percentage}%)
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-muted rounded-full h-2">
+                                    <div
+                                      className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full transition-all"
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            });
+                        })()}
+                      </div>
+                      {payouts.length === 0 && (
+                        <p className="text-xs text-muted-foreground font-italic">No payouts generated yet</p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Creator Rankings */}
+                  <Card className="border-border bg-card">
+                    <CardHeader>
+                      <CardTitle className="text-base">Creator Rankings</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2">Rank</th>
+                            <th className="text-left py-2">Creator</th>
+                            <th className="text-right py-2">Followers</th>
+                            <th className="text-right py-2">Monthly Views</th>
+                            <th className="text-center py-2">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {creators
+                            .sort((a, b) => Number(b.followers) - Number(a.followers))
+                            .map((creator, idx) => (
+                              <tr key={creator.id} className="border-b hover:bg-muted/50">
+                                <td className="py-2 font-bold text-primary">#{idx + 1}</td>
+                                <td className="py-2">
+                                  <div>
+                                    <p className="font-medium">{creator.name}</p>
+                                    <p className="text-muted-foreground">{creator.platform}</p>
+                                  </div>
+                                </td>
+                                <td className="text-right py-2">{Number(creator.followers).toLocaleString()}</td>
+                                <td className="text-right py-2">{(creator.monthly_views || 0).toLocaleString()}</td>
+                                <td className="text-center py-2">
+                                  <span className={`text-xs px-2 py-1 rounded-full ${creator.is_top_partner ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
+                                    {creator.is_top_partner ? "Top 🔥" : "Regular"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
