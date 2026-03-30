@@ -114,9 +114,31 @@ const BlogArticle = () => {
 
   const article = BLOG_DATA[slug];
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.metaDesc,
+    author: { "@type": "Organization", name: "ReelAnalyzer" },
+    publisher: {
+      "@type": "Organization",
+      name: "ReelAnalyzer",
+      logo: { "@type": "ImageObject", url: "https://reelsanylizer.in/favicon.png" },
+    },
+    mainEntityOfPage: `https://reelsanylizer.in/blog/${slug}`,
+    datePublished: "2025-03-01",
+  };
+
   return (
     <div className="page-surface min-h-screen relative overflow-x-hidden pb-20 md:pb-0">
-      <SEOHead title={article.metaTitle} description={article.metaDesc} canonical={`https://reelsanylizer.in/blog/${slug}`} keywords={article.keywords} />
+      <SEOHead
+        title={article.metaTitle}
+        description={article.metaDesc}
+        canonical={`https://reelsanylizer.in/blog/${slug}`}
+        keywords={article.keywords}
+        schema={articleSchema}
+        openGraphType="article"
+      />
 
       <div className="max-w-2xl mx-auto px-4 pt-8 sm:pt-12 pb-6">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6">

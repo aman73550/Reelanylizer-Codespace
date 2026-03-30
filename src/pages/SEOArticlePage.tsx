@@ -48,11 +48,9 @@ const SEOArticlePage = () => {
         description={article.metaDesc}
         canonical={`https://reelsanylizer.in/guides/${slug}`}
         keywords={article.keywords}
+        schema={[faqSchema, articleSchema]}
+        openGraphType="article"
       />
-
-      {/* Inject structured data */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
 
       <div className="max-w-2xl mx-auto px-4 pt-8 sm:pt-12 pb-6">
         <Link to="/blog" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6">

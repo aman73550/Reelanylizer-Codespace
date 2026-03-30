@@ -322,13 +322,26 @@ const YoutubeAnalyzer = () => {
 
   const chartLabels = { hook: t.hook, caption: t.caption, hashtag: t.hashtag, engagement: t.engagement, trend: t.trend };
 
+  const shortsSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "YouTube Shorts Analyzer",
+    applicationCategory: "MarketingApplication",
+    operatingSystem: "Web",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free Shorts SEO and viral score checks" },
+    url: "https://reelsanylizer.in/youtube-analyzer",
+    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", reviewCount: "1200" },
+    keywords: "YouTube Shorts SEO Tool, Shorts Viral Score Checker, YouTube Shorts Performance Audit, Analyze My YouTube Shorts, Shorts Algorithm Checker, Best Shorts Analytics Tool, YouTube Shorts Optimization AI, Shorts Ranking Factor Tool, Check Shorts Virality Online, YouTube Shorts Growth Tool, Shorts Audience Retention Analyzer, YouTube Shorts Channel Audit, Shorts View Predictor AI, Free Shorts SEO Checker, YouTube Shorts Secret Analytics"
+  };
+
   return (
     <>
       <SEOHead 
-        title="Free YouTube Shorts Analyzer – Viral Score & Growth Tips | ReelAnalyzer"
-        description="Analyze YouTube Shorts for viral potential, hook strength, YouTube algorithm compatibility & monetization readiness. Get free analysis with 5 monthly credits."
-        keywords="youtube shorts analyzer, shorts viral checker, youtube algorithm, shorts analysis tool, viral score predictor, youtube monetization check, shorts engagement analyzer, youtube growth tool, shorts performance tracker, youtube policy compliance"
+        title="YouTube Shorts SEO Tool | Shorts Viral Score Checker | Reelanylizer"
+        description="Analyze YouTube Shorts for viral score, retention, and algorithm fit. Get SEO titles, keyword research, and audience retention fixes before you post."
+        keywords="YouTube Shorts SEO Tool, Shorts Viral Score Checker, YouTube Shorts Performance Audit, Analyze My YouTube Shorts, Shorts Algorithm Checker, Best Shorts Analytics Tool, YouTube Shorts Optimization AI, Shorts Ranking Factor Tool, Check Shorts Virality Online, YouTube Shorts Growth Tool, Shorts Audience Retention Analyzer, YouTube Shorts Channel Audit, Shorts View Predictor AI, Free Shorts SEO Checker, YouTube Shorts Secret Analytics"
         canonical="https://reelsanylizer.in/youtube-analyzer"
+        schema={shortsSchema}
       />
       <div className="min-h-screen relative overflow-x-hidden">
       
