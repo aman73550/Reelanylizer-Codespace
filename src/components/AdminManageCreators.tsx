@@ -85,9 +85,17 @@ export default function AdminManageCreators() {
 
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        toast.error("Not authenticated. Please log in again.");
+        return;
+      }
 
       const { data, error } = await supabase.functions.invoke("manage-creators", {
+        headers: {
+          "Authorization": `Bearer ${session.access_token}`,
+        },
         body: {
           action: "create_creator",
           ...formData,
