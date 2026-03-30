@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Trash2, DollarSign, Lock, Copy, Check, Tabs } from "lucide-react";
+import { Plus, Trash2, DollarSign, Lock, Copy, Check, Upload, Link as LinkIcon, X } from "lucide-react";
 
 interface Creator {
   id: string;
@@ -68,6 +68,9 @@ export default function AdminManageCreators() {
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
   const [generatingPayouts, setGeneratingPayouts] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const [profileImageMode, setProfileImageMode] = useState<"upload" | "link">("upload");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -96,6 +99,91 @@ export default function AdminManageCreators() {
   useEffect(() => {
     loadAllData();
   }, []);
+
+  // Compress image using Canvas API (client-side, no external dependencies)
+  const compressImage = (file: File, quality = 0.7, maxWidth = 400, maxHeight = 400): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Maintain aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB before compression)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size too large. Max 5MB.");
+      return;
+    }
+
+    try {
+      toast.loading("Compressing image...");
+      const compressedImage = await compressImage(file, 0.75, 400, 400);
+      setProfileImagePreview(compressedImage);
+      setFormData({ ...formData, profile_image: compressedImage });
+      toast.dismiss();
+      toast.success("Image compressed & ready!");
+    } catch (error) {
+      toast.error("Failed to process image");
+      console.error(error);
+    }
+  };
+
+  // Handle URL input for profile image
+  const handleProfileImageUrl = (url: string) => {
+    if (url.trim().startsWith("http")) {
+      setProfileImagePreview(url);
+      setFormData({ ...formData, profile_image: url });
+    } else {
+      toast.error("Please enter a valid URL");
+    }
+  };
+
+  // Clear profile image
+  const clearProfileImage = () => {
+    setProfileImagePreview(null);
+    setFormData({ ...formData, profile_image: "" });
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const loadAllData = async () => {
     await Promise.all([loadCreators(), loadCampaigns(), loadPayouts(), loadActivityLogs()]);
@@ -308,6 +396,87 @@ export default function AdminManageCreators() {
 
             {showCreateForm && (
               <CardContent className="border-b border-border space-y-4 pb-4">
+                {/* Profile Picture Section */}
+                <div className="bg-purple-50 dark:bg-purple-950 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+                  <Label className="text-base font-semibold mb-3 block">📸 Profile Picture</Label>
+                  
+                  {/* Image Preview */}
+                  {profileImagePreview && (
+                    <div className="mb-4 relative inline-block">
+                      <img 
+                        src={profileImagePreview} 
+                        alt="Preview" 
+                        className="w-24 h-24 rounded-lg object-cover border-2 border-purple-400"
+                      />
+                      <button
+                        onClick={clearProfileImage}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Upload/Link Tabs */}
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      onClick={() => setProfileImageMode("upload")}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition ${
+                        profileImageMode === "upload"
+                          ? "bg-purple-600 text-white"
+                          : "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
+                      }`}
+                    >
+                      <Upload className="w-4 h-4" /> Upload File
+                    </button>
+                    <button
+                      onClick={() => setProfileImageMode("link")}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition ${
+                        profileImageMode === "link"
+                          ? "bg-purple-600 text-white"
+                          : "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
+                      }`}
+                    >
+                      <LinkIcon className="w-4 h-4" /> Paste Link
+                    </button>
+                  </div>
+
+                  {/* Upload Option */}
+                  {profileImageMode === "upload" && (
+                    <div className="border-2 border-dashed border-purple-300 rounded-lg p-4 text-center">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                      >
+                        <Upload className="w-4 h-4" /> Choose Image
+                      </button>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Auto-compressed to 400x400px, JPEG quality 75%
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Link Option */}
+                  {profileImageMode === "link" && (
+                    <Input
+                      type="url"
+                      placeholder="https://example.com/profile.jpg"
+                      onChange={(e) => {
+                        handleProfileImageUrl(e.target.value);
+                      }}
+                      className="mt-2"
+                    />
+                  )}
+                </div>
+
+                {/* Creator Details Form */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { label: "Name", key: "name", type: "text" },
@@ -318,7 +487,6 @@ export default function AdminManageCreators() {
                     { label: "Monthly Views", key: "monthly_views", placeholder: "e.g. 50000" },
                     { label: "Instagram URL", key: "instagram_url", placeholder: "https://instagram.com/username" },
                     { label: "YouTube URL", key: "youtube_url", placeholder: "https://youtube.com/@channel" },
-                    { label: "Profile Picture URL", key: "profile_image", placeholder: "https://..." },
                     { label: "Promo Video URL", key: "promo_video_url", placeholder: "https://youtube.com/watch?v=..." },
                     { label: "Tags (comma separated)", key: "tags", placeholder: "Lifestyle, Growth, Content" },
                   ].map(({ label, key, type = "text", placeholder }) => (
