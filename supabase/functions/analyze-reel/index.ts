@@ -1295,7 +1295,7 @@ serve(async (req) => {
       // Instagram oEmbed
       if (!thumbnailUrl || !authorName) {
         try {
-          const oembedResp = await fetch(`https://api.instagram.com/oembed?url=${encodeURIComponent(url)}`);
+          const oembedResp = await fetch(`https://api.instagram.com/oembed?url=${encodeURIComponent(trimmedUrl)}`);
           if (oembedResp.ok) {
             const oembed = await oembedResp.json();
             metadata = `Title: ${oembed.title || "N/A"}\nAuthor: ${oembed.author_name || "N/A"}`;
@@ -1310,7 +1310,7 @@ serve(async (req) => {
     // Layer 4: noembed fallback
     if (!thumbnailUrl) {
       try {
-        const noembedResp = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
+        const noembedResp = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(trimmedUrl)}`);
         if (noembedResp.ok) {
           const noembed = await noembedResp.json();
           if (noembed.thumbnail_url) thumbnailUrl = noembed.thumbnail_url;
