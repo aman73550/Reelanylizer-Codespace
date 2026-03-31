@@ -76,12 +76,6 @@ const normalizeUrl = (value: string) => {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 };
 
-const normalizeUrl = (value: string) => {
-  const trimmed = value.trim();
-  if (!trimmed) return "";
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-};
-
 const YoutubeAnalyzer = () => {
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
