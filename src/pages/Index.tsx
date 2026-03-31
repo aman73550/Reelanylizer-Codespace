@@ -72,6 +72,12 @@ function setCachedAnalysis(url: string, result: ReelAnalysis) {
 let lastAnalysisTime = 0;
 const COOLDOWN_MS = 60_000;
 
+const normalizeUrl = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+};
+
 const Index = () => {
   const [url, setUrl] = useState("");
   const [caption, setCaption] = useState("");
@@ -105,10 +111,17 @@ const Index = () => {
   const runAnalysis = useCallback(async (paymentToken?: string) => {
     setLoading(true);
     setAnalysis(null);
-    const trimmedUrl = url.trim();
+    const normalizedUrl = normalizeUrl(url);
+
+    if (!normalizedUrl) {
+      toast({ title: t.enterUrl, variant: "destructive" });
+      setLoading(false);
+      setAnalyzeDisabled(false);
+      return;
+    }
 
     // Check session cache first — same URL returns same result (consistent scoring)
-    const cached = getCachedAnalysis(trimmedUrl);
+    const cached = getCachedAnalysis(normalizedUrl);
     if (cached && !paymentToken) {
       setAnalysis(cached);
       setLoading(false);
@@ -119,7 +132,7 @@ const Index = () => {
 
     try {
       const bodyPayload: any = {
-        url: trimmedUrl,
+        url: normalizedUrl,
         caption: caption.trim() || undefined,
         hashtags: hashtags.trim() || undefined,
         lang,
@@ -184,14 +197,20 @@ const Index = () => {
       setPendingPaymentToken(null);
       lastAnalysisTime = Date.now();
 
+      // Deduct credits only after a successful analysis so users don't lose credits on failures.
+      const deducted = await deductCredits("reel_analysis");
+      if (!deducted) {
+        throw new Error("Could not deduct credits after analysis. Please try again.");
+      }
+
       // Cache the result for consistent scoring
-      setCachedAnalysis(trimmedUrl, data.analysis);
+      setCachedAnalysis(normalizedUrl, data.analysis);
 
       // Save analysis for logged-in user
       if (user) {
         await supabase.from("user_analyses" as any).insert({
           user_id: user.id,
-          reel_url: trimmedUrl,
+          reel_url: normalizedUrl,
           viral_score: data.analysis?.viralClassification?.score ?? data.analysis?.viralScore ?? 0,
           analysis_data: data.analysis,
         } as any);
@@ -210,7 +229,7 @@ const Index = () => {
       setLoading(false);
       setAnalyzeDisabled(false);
     }
-  }, [url, caption, hashtags, likes, comments, views, shares, saves, sampleComments, lang, t, toast, user, refreshUsage, refreshCredits, loadAnalyses]);
+  }, [url, caption, hashtags, likes, comments, views, shares, saves, sampleComments, lang, t, toast, user, refreshUsage, refreshCredits, loadAnalyses, deductCredits]);
 
   const handlePaymentSuccess = (paymentToken: string) => {
     setShowPaymentPopup(false);
@@ -223,15 +242,15 @@ const Index = () => {
 
   const handleAnalyze = async () => {
     if (loading || analyzeDisabled) return;
-    const trimmedUrl = url.trim();
-    if (!trimmedUrl) { toast({ title: t.enterUrl, variant: "destructive" }); return; }
+    const normalizedUrl = normalizeUrl(url);
+    if (!normalizedUrl) { toast({ title: t.enterUrl, variant: "destructive" }); return; }
     const igPattern = /^https?:\/\/(www\.)?(instagram\.com|instagr\.am)\/(reel|reels|p)\//i;
     const ytPattern = /^https?:\/\/(www\.)?(m\.)?(youtube\.com\/(shorts\/|watch\?v=)|youtu\.be\/)/i;
-    if (!igPattern.test(trimmedUrl) && !ytPattern.test(trimmedUrl)) { 
+    if (!igPattern.test(normalizedUrl) && !ytPattern.test(normalizedUrl)) { 
       toast({ title: "Invalid URL", description: "Please enter a valid Instagram Reel or YouTube Shorts URL", variant: "destructive" }); 
       return; 
     }
-    if (trimmedUrl.length > 500) { toast({ title: "URL too long", variant: "destructive" }); return; }
+    if (normalizedUrl.length > 500) { toast({ title: "URL too long", variant: "destructive" }); return; }
 
     // === COOLDOWN CHECK (1 analysis per 60 seconds) ===
     const timeSinceLast = Date.now() - lastAnalysisTime;
@@ -242,7 +261,7 @@ const Index = () => {
     }
 
     // === CHECK SESSION CACHE — same URL gives same score ===
-    const cached = getCachedAnalysis(trimmedUrl);
+    const cached = getCachedAnalysis(normalizedUrl);
     if (cached) {
       setAnalysis(cached);
       toast({ title: "Cached Result", description: "Showing saved analysis for this URL (same score guaranteed)." });
@@ -250,19 +269,17 @@ const Index = () => {
     }
 
     // YouTube Shorts length check
-    const isYTShorts = ytPattern.test(trimmedUrl);
+    const isYTShorts = ytPattern.test(normalizedUrl);
     if (isYTShorts) {
       try {
-        const dateCheckRes = await supabase.functions.invoke("check-reel-date", { body: { url: trimmedUrl } });
+        const dateCheckRes = await supabase.functions.invoke("check-reel-date", { body: { url: normalizedUrl } });
         if (dateCheckRes.error) {
           console.error("YouTube length check failed:", dateCheckRes.error);
         } else if (dateCheckRes.data?.isTooLong) {
-          toast({ 
-            title: "Video Too Long", 
-            description: "YouTube Shorts analysis is only available for videos up to 50 seconds. This video is longer — please try a shorter one.", 
-            variant: "destructive" 
+          toast({
+            title: "Long Video",
+            description: "This video is over 50 seconds. We will still analyze it, but results may be less accurate for non-Shorts.",
           });
-          return;
         } else if (dateCheckRes.data?.isYouTubeShorts && dateCheckRes.data?.videoDurationSeconds === null) {
           console.warn("Could not detect YouTube Shorts duration, proceeding anyway");
         }
@@ -296,12 +313,8 @@ const Index = () => {
     // Lock button immediately — prevents double-click double deduction
     setAnalyzeDisabled(true);
     
-    // Deduct credits before running analysis
-    const deducted = await deductCredits("reel_analysis");
-    if (!deducted) {
-      setAnalyzeDisabled(false);
-      return;
-    }
+    // Store normalized URL so UI reflects the actual value being analyzed
+    setUrl(normalizedUrl);
 
     setShowInterstitial(true);
     runAnalysis();
@@ -309,8 +322,6 @@ const Index = () => {
 
   const handleTriggerRetry = async () => {
     dismissTrigger();
-    const deducted = await deductCredits("reel_analysis");
-    if (!deducted) return;
     setShowInterstitial(true);
     runAnalysis();
   };
@@ -386,6 +397,19 @@ const Index = () => {
               >
                 <p style={{ fontSize: "13px", color: "#6B7280" }} className="font-medium">Powered by Leading AI Models</p>
                 <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
+                  <div
+                    style={{
+                      background: "linear-gradient(90deg, #6366F1, #A855F7)",
+                      color: "white",
+                      padding: "9px 16px",
+                      borderRadius: "999px",
+                      boxShadow: "0 0 0 2px rgba(99,102,241,0.12), 0 8px 24px rgba(99,102,241,0.35)",
+                      letterSpacing: "0.01em",
+                    }}
+                    className="text-sm font-semibold"
+                  >
+                    Our most powerful AI agent
+                  </div>
                   <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
                     GPT-5.2 / 5.4
                   </div>

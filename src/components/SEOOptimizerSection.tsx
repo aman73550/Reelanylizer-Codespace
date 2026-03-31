@@ -50,15 +50,19 @@ const SEOOptimizerSection = () => {
       return;
     }
     setSubmitDisabled(true);
-    // Deduct credit before running
-    const deducted = await deductCredits("seo_optimizer");
-    if (!deducted) { setSubmitDisabled(false); return; }
     setIsProcessing(true);
     setAnalysisComplete(false);
     setSeoResults(null);
     try {
       const { data, error } = await supabase.functions.invoke("seo-analyze", { body: { topic: input.trim() } });
       if (error || !data?.success) throw new Error(data?.error || error?.message || "SEO analysis failed");
+
+      // Deduct credits only after a successful analysis so users don't lose credits on failures.
+      const deducted = await deductCredits("seo_optimizer");
+      if (!deducted) {
+        throw new Error("Could not deduct credits after analysis. Please try again.");
+      }
+
       setSeoResults(data.data);
       setAnalysisComplete(true);
       if (user) {
@@ -145,6 +149,19 @@ const SEOOptimizerSection = () => {
                   >
                     <p style={{ fontSize: "13px", color: "#6B7280" }} className="font-medium">Powered by Leading AI Models</p>
                     <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
+                      <div
+                        style={{
+                          background: "linear-gradient(90deg, #6366F1, #A855F7)",
+                          color: "white",
+                          padding: "9px 16px",
+                          borderRadius: "999px",
+                          boxShadow: "0 0 0 2px rgba(99,102,241,0.12), 0 8px 24px rgba(99,102,241,0.35)",
+                          letterSpacing: "0.01em",
+                        }}
+                        className="text-sm font-semibold"
+                      >
+                        Our most powerful AI agent
+                      </div>
                       <div style={{ background: "#F3F4F6", border: "1px solid #E5E7EB", padding: "8px 14px", borderRadius: "999px", color: "#374151" }} className="text-sm font-medium">
                         GPT-5.2 / 5.4
                       </div>

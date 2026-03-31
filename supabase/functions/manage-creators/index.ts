@@ -74,6 +74,47 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, creator }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    if (action === "update_creator") {
+      const { creator_id, name, email, platform, username, followers, is_top_partner, profile_image, tags, promo_video_url, social_url, monthly_views, instagram_url, youtube_url, new_password } = body;
+      if (!creator_id) {
+        return new Response(JSON.stringify({ success: false, message: "creator_id required" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
+      }
+
+      const updates: Record<string, any> = {};
+      if (name !== undefined) updates.name = name;
+      if (email !== undefined) updates.email = String(email).toLowerCase();
+      if (platform !== undefined) updates.platform = platform;
+      if (username !== undefined) updates.username = username;
+      if (followers !== undefined) updates.followers = followers;
+      if (monthly_views !== undefined) updates.monthly_views = monthly_views;
+      if (instagram_url !== undefined) updates.instagram_url = instagram_url;
+      if (youtube_url !== undefined) updates.youtube_url = youtube_url;
+      if (profile_image !== undefined) updates.profile_image = profile_image;
+      if (promo_video_url !== undefined) updates.promo_video_url = promo_video_url;
+      if (social_url !== undefined) updates.social_url = social_url;
+      if (Array.isArray(tags)) updates.tags = tags;
+      if (is_top_partner !== undefined) updates.is_top_partner = !!is_top_partner;
+      if (new_password) updates.password_hash = await hashPassword(new_password);
+
+      if (Object.keys(updates).length === 0) {
+        return new Response(JSON.stringify({ success: false, message: "No fields to update" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
+      }
+
+      const { error } = await supabase.from("creators").update(updates).eq("id", creator_id);
+      if (error) {
+        return new Response(JSON.stringify({ success: false, message: error.message }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
+      }
+
+      await supabase.from("activity_logs").insert({
+        actor_type: "admin", actor_id: user.id,
+        action: new_password ? "update_creator_with_password" : "update_creator",
+        target_type: "creator", target_id: creator_id,
+        details: { updated_fields: Object.keys(updates) },
+      });
+
+      return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     if (action === "add_bonus") {
       const { payout_id, bonus_amount } = body;
       if (!payout_id || !bonus_amount) {

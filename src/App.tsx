@@ -66,6 +66,12 @@ const ConfigErrorScreen = () => (
   </div>
 );
 
+const UnconfiguredBanner = () => (
+  <div className="w-full bg-amber-100 text-amber-900 text-sm py-2 px-4 text-center">
+    Supabase env vars missing — running in limited preview mode.
+  </div>
+);
+
 const PublicLayout = () => {
   const location = useLocation();
   const hideHeader = location.pathname.startsWith("/bosspage") ||
@@ -88,53 +94,58 @@ const App = () => (
           <Sonner />
           <div className="ambient-blob ambient-blob--primary" aria-hidden="true" />
           <div className="ambient-blob ambient-blob--secondary" aria-hidden="true" />
-          {isSupabaseConfigured ? (
-            <BrowserRouter>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route element={<PublicLayout />}>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/youtube-analyzer" element={<YoutubeAnalyzer />} />
-                    <Route path="/seo-optimizer" element={<SEOOptimizer />} />
+          {(() => {
+            const allowUnconfigured = import.meta.env.DEV || import.meta.env.VITE_ALLOW_UNCONFIGURED_PREVIEW === "true";
+            const canRenderApp = isSupabaseConfigured || allowUnconfigured;
+            if (!canRenderApp) return <ConfigErrorScreen />;
 
-                    <Route path="/reel-analyzer" element={<SEOToolPage slug="reel-analyzer" />} />
-                    <Route path="/instagram-reel-analyzer" element={<SEOToolPage slug="instagram-reel-analyzer" />} />
-                    <Route path="/reel-seo-optimizer" element={<SEOToolPage slug="reel-seo-optimizer" />} />
-                    <Route path="/reel-hashtag-generator" element={<SEOToolPage slug="reel-hashtag-generator" />} />
-                    <Route path="/reel-caption-generator" element={<SEOToolPage slug="reel-caption-generator" />} />
-                    <Route path="/reel-title-generator" element={<SEOToolPage slug="reel-title-generator" />} />
-                    <Route path="/reel-viral-checker" element={<SEOToolPage slug="reel-viral-checker" />} />
-                    <Route path="/reel-engagement-calculator" element={<SEOToolPage slug="reel-engagement-calculator" />} />
+            return (
+              <BrowserRouter>
+                {!isSupabaseConfigured && <UnconfiguredBanner />}
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route element={<PublicLayout />}>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/youtube-analyzer" element={<YoutubeAnalyzer />} />
+                      <Route path="/seo-optimizer" element={<SEOOptimizer />} />
 
-                    <Route path="/guides/:slug" element={<SEOArticlePage />} />
+                      <Route path="/reel-analyzer" element={<SEOToolPage slug="reel-analyzer" />} />
+                      <Route path="/instagram-reel-analyzer" element={<SEOToolPage slug="instagram-reel-analyzer" />} />
+                      <Route path="/reel-seo-optimizer" element={<SEOToolPage slug="reel-seo-optimizer" />} />
+                      <Route path="/reel-hashtag-generator" element={<SEOToolPage slug="reel-hashtag-generator" />} />
+                      <Route path="/reel-caption-generator" element={<SEOToolPage slug="reel-caption-generator" />} />
+                      <Route path="/reel-title-generator" element={<SEOToolPage slug="reel-title-generator" />} />
+                      <Route path="/reel-viral-checker" element={<SEOToolPage slug="reel-viral-checker" />} />
+                      <Route path="/reel-engagement-calculator" element={<SEOToolPage slug="reel-engagement-calculator" />} />
 
-                    <Route path="/blog" element={<BlogIndex />} />
-                    <Route path="/blog/:slug" element={<BlogArticle />} />
+                      <Route path="/guides/:slug" element={<SEOArticlePage />} />
 
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/sitemap-page" element={<SitemapPage />} />
-                    <Route path="/partnership" element={<PartnershipPage />} />
-                    <Route path="/collaboration" element={<CollaborationPage />} />
-                    <Route path="/promotion" element={<PromotionPage />} />
-                    <Route path="/pricing" element={<PricingPage />} />
+                      <Route path="/blog" element={<BlogIndex />} />
+                      <Route path="/blog/:slug" element={<BlogArticle />} />
 
-                    <Route path="/login" element={<UserLogin />} />
-                    <Route path="/bosspage-login" element={<AdminLogin />} />
-                    <Route path="/bosspage" element={<AdminDashboard />} />
-                    <Route path="/creator-login" element={<CreatorLogin />} />
-                    <Route path="/creator-dashboard" element={<CreatorDashboard />} />
+                      <Route path="/about" element={<AboutPage />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/sitemap-page" element={<SitemapPage />} />
+                      <Route path="/partnership" element={<PartnershipPage />} />
+                      <Route path="/collaboration" element={<CollaborationPage />} />
+                      <Route path="/promotion" element={<PromotionPage />} />
+                      <Route path="/pricing" element={<PricingPage />} />
 
-                    <Route path="*" element={<NotFound />} />
-                  </Route>
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-          ) : (
-            <ConfigErrorScreen />
-          )}
+                      <Route path="/login" element={<UserLogin />} />
+                      <Route path="/bosspage-login" element={<AdminLogin />} />
+                      <Route path="/bosspage" element={<AdminDashboard />} />
+                      <Route path="/creator-login" element={<CreatorLogin />} />
+                      <Route path="/creator-dashboard" element={<CreatorDashboard />} />
+
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            );
+          })()}
         </TooltipProvider>
       </AuthProvider>
     </LangProvider>

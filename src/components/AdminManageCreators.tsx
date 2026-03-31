@@ -73,6 +73,7 @@ export default function AdminManageCreators() {
   const [profileImageMode, setProfileImageMode] = useState<"upload" | "link">("upload");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [editingCreator, setEditingCreator] = useState<Creator | null>(null);
+  const [newPassword, setNewPassword] = useState("");
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 
   const [formData, setFormData] = useState({
@@ -193,71 +194,35 @@ export default function AdminManageCreators() {
   const updateCreator = async (creator: Creator) => {
     try {
       setLoading(true);
-      
-      // Get old creator data for comparison
-      const { data: oldCreator } = await supabase
-        .from("creators")
-        .select("*")
-        .eq("id", creator.id)
-        .single();
+      const payloadTags = Array.isArray(creator.tags) ? creator.tags : (creator.tags ? String(creator.tags).split(",").map(t => t.trim()).filter(Boolean) : []);
+      const monthlyViewsValue = creator.monthly_views === undefined || creator.monthly_views === null || creator.monthly_views === "" ? undefined : Number(creator.monthly_views);
+      const followersValue = creator.followers === undefined || creator.followers === null || creator.followers === "" ? undefined : Number(creator.followers);
 
-      const { error } = await supabase
-        .from("creators")
-        .update({
+      const { data, error } = await supabase.functions.invoke("manage-creators", {
+        body: {
+          action: "update_creator",
+          creator_id: creator.id,
           name: creator.name,
           email: creator.email,
           platform: creator.platform,
-          username: creator.username,
-          followers: creator.followers,
-          monthly_views: creator.monthly_views,
+          username: (creator as any).username || null,
+          followers: followersValue,
+          monthly_views: monthlyViewsValue,
           instagram_url: creator.instagram_url,
           youtube_url: creator.youtube_url,
           profile_image: creator.profile_image,
           promo_video_url: creator.promo_video_url,
-          tags: creator.tags,
+          tags: payloadTags,
           is_top_partner: creator.is_top_partner,
-        })
-        .eq("id", creator.id);
+          new_password: newPassword || undefined,
+        },
+      });
 
-      if (error) throw error;
-
-      // Log activity with change details
-      const { data: { session } } = await supabase.auth.getSession();
-      const changes: Record<string, any> = {};
-      if (oldCreator?.name !== creator.name) changes.name = { old: oldCreator?.name, new: creator.name };
-      if (oldCreator?.email !== creator.email) changes.email = { old: oldCreator?.email, new: creator.email };
-      if (oldCreator?.followers !== creator.followers) changes.followers = { old: oldCreator?.followers, new: creator.followers };
-      if (oldCreator?.is_top_partner !== creator.is_top_partner) changes.is_top_partner = { old: oldCreator?.is_top_partner, new: creator.is_top_partner };
-
-      if (Object.keys(changes).length > 0) {
-        await supabase.from("activity_logs").insert({
-          actor_type: "admin",
-          actor_id: session?.user.id,
-          action: "edit",
-          target_type: "creator",
-          target_id: creator.id,
-          details: {
-            old_values: {
-              name: oldCreator?.name,
-              email: oldCreator?.email,
-              platform: oldCreator?.platform,
-              followers: oldCreator?.followers,
-              is_top_partner: oldCreator?.is_top_partner,
-            },
-            new_values: {
-              name: creator.name,
-              email: creator.email,
-              platform: creator.platform,
-              followers: creator.followers,
-              is_top_partner: creator.is_top_partner,
-            },
-            changes: Object.keys(changes),
-          },
-        });
-      }
+      if (error || !data?.success) throw new Error(data?.message || error?.message || "Failed to update creator");
 
       toast.success("Creator updated!");
       setEditingCreator(null);
+      setNewPassword("");
       await loadCreators();
       await loadActivityLogs();
     } catch (error: any) {
@@ -793,7 +758,10 @@ export default function AdminManageCreators() {
                                 variant="outline"
                                 size="sm"
                                 className="h-7 px-2 text-xs"
-                                onClick={() => setEditingCreator(creator)}
+                                onClick={() => {
+                                  setNewPassword("");
+                                  setEditingCreator(creator);
+                                }}
                               >
                                 <Edit3 className="w-3 h-3" />
                               </Button>
@@ -828,7 +796,7 @@ export default function AdminManageCreators() {
               <CardContent className="border-t border-border bg-muted/20 space-y-4 p-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-semibold">Edit Creator - {editingCreator.name}</h3>
-                  <button onClick={() => setEditingCreator(null)}>
+                  <button onClick={() => { setEditingCreator(null); setNewPassword(""); }}>
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -867,6 +835,64 @@ export default function AdminManageCreators() {
                     <Input
                       value={editingCreator.followers}
                       onChange={(e) => setEditingCreator({ ...editingCreator, followers: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Monthly Views</Label>
+                    <Input
+                      value={editingCreator.monthly_views || ""}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, monthly_views: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Instagram URL</Label>
+                    <Input
+                      value={editingCreator.instagram_url || ""}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, instagram_url: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">YouTube URL</Label>
+                    <Input
+                      value={editingCreator.youtube_url || ""}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, youtube_url: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Profile Image URL</Label>
+                    <Input
+                      value={editingCreator.profile_image || ""}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, profile_image: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Promo Video URL</Label>
+                    <Input
+                      value={editingCreator.promo_video_url || ""}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, promo_video_url: e.target.value })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Tags (comma separated)</Label>
+                    <Input
+                      value={Array.isArray(editingCreator.tags) ? editingCreator.tags.join(", ") : editingCreator.tags || ""}
+                      onChange={(e) => setEditingCreator({ ...editingCreator, tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean) })}
+                      className="h-8 text-xs mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Reset Password (optional)</Label>
+                    <Input
+                      type="password"
+                      placeholder="Leave blank to keep"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       className="h-8 text-xs mt-1"
                     />
                   </div>
@@ -1457,4 +1483,5 @@ export default function AdminManageCreators() {
       )}
     </div>
   );
+}
 }

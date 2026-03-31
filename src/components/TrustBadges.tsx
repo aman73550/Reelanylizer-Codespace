@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, Zap, Lock, BarChart3 } from "lucide-react";
+import { ShieldCheck, Zap, Lock, BarChart3, Sparkles } from "lucide-react";
 
 const BADGES_DEFAULT = [
+  { icon: Sparkles, label: "Our most powerful", highlight: "AI agent", iconColor: "#F97316", iconBg: "linear-gradient(90deg, rgba(249,115,22,0.16), rgba(236,72,153,0.14))", glow: true },
   { icon: ShieldCheck, label: "Trusted by", highlight: "5,000+ Creators", iconColor: "#22C55E", iconBg: "rgba(34,197,94,0.1)" },
   { icon: Zap, label: "10x Faster", highlight: "Results", iconColor: "#F59E0B", iconBg: "rgba(245,158,11,0.1)" },
   { icon: Lock, label: "100%", highlight: "Private & Secure", iconColor: "#6366F1", iconBg: "rgba(99,102,241,0.1)" },
 ];
 
 const BADGES_SEO = [
+  { icon: Sparkles, label: "Our most powerful", highlight: "AI agent", iconColor: "#F97316", iconBg: "linear-gradient(90deg, rgba(249,115,22,0.18), rgba(139,92,246,0.16))", glow: true },
   { icon: ShieldCheck, label: "Trusted by", highlight: "5,000+ Creators", iconColor: "#22C55E", iconBg: "rgba(34,197,94,0.15)" },
   { icon: BarChart3, label: "Boost Reel", highlight: "Visibility", iconColor: "#F59E0B", iconBg: "rgba(245,158,11,0.12)" },
   { icon: Lock, label: "100% Private", highlight: "& Secure", iconColor: "#8B5CF6", iconBg: "rgba(139,92,246,0.12)" },
@@ -31,14 +33,21 @@ const TrustBadges = ({ variant = "default" }: TrustBadgesProps) => {
         {badges.map((badge, i) => (
           <motion.div
             key={badge.label}
-            className={`flex items-center gap-3 px-6 sm:px-8 py-3 ${i > 0 ? "sm:border-l border-border" : ""}`}
+            className={`relative flex items-center gap-3 px-6 sm:px-8 py-3 ${i > 0 ? "sm:border-l border-border" : ""} ${badge.glow ? "rounded-full" : ""}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 + i * 0.12 }}
           >
+            {badge.glow && (
+              <div
+                className="absolute inset-0 blur-2xl opacity-70"
+                style={{ background: badge.iconBg }}
+                aria-hidden
+              />
+            )}
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: badge.iconBg }}
+              style={{ background: badge.iconBg, boxShadow: badge.glow ? "0 0 25px rgba(249,115,22,0.35)" : undefined }}
             >
               <badge.icon className="w-5 h-5" style={{ color: badge.iconColor }} />
             </div>
